@@ -11,12 +11,12 @@ Abstract:
     Declaration of topology tables.
 --*/
 
-#ifndef _CSAUDIOACP3X_SPEAKERTOPTABLE_H_
-#define _CSAUDIOACP3X_SPEAKERTOPTABLE_H_
+#ifndef _CSAUDIOACP3X_HEADPHONETOPTABLE_H_
+#define _CSAUDIOACP3X_HEADPHONETOPTABLE_H_
 
 //=============================================================================
 static
-KSDATARANGE SpeakerTopoPinDataRangesBridge[] =
+KSDATARANGE HeadphoneTopoPinDataRangesBridge[] =
 {
  {
    sizeof(KSDATARANGE),
@@ -31,14 +31,14 @@ KSDATARANGE SpeakerTopoPinDataRangesBridge[] =
 
 //=============================================================================
 static
-PKSDATARANGE SpeakerTopoPinDataRangePointersBridge[] =
+PKSDATARANGE HeadphoneTopoPinDataRangePointersBridge[] =
 {
-  &SpeakerTopoPinDataRangesBridge[0]
+  &HeadphoneTopoPinDataRangesBridge[0]
 };
 
 //=============================================================================
 static
-PCPIN_DESCRIPTOR SpeakerTopoMiniportPins[] =
+PCPIN_DESCRIPTOR HeadphoneTopoMiniportPins[] =
 {
   // KSPIN_TOPO_WAVEOUT_SOURCE
   {
@@ -51,8 +51,8 @@ PCPIN_DESCRIPTOR SpeakerTopoMiniportPins[] =
       NULL,                                             // Interfaces
       0,                                                // MediumsCount
       NULL,                                             // Mediums
-      SIZEOF_ARRAY(SpeakerTopoPinDataRangePointersBridge),// DataRangesCount
-      SpeakerTopoPinDataRangePointersBridge,            // DataRanges
+      SIZEOF_ARRAY(HeadphoneTopoPinDataRangePointersBridge),// DataRangesCount
+      HeadphoneTopoPinDataRangePointersBridge,            // DataRanges
       KSPIN_DATAFLOW_IN,                                // DataFlow
       KSPIN_COMMUNICATION_NONE,                         // Communication
       &KSCATEGORY_AUDIO,                                // Category
@@ -71,11 +71,11 @@ PCPIN_DESCRIPTOR SpeakerTopoMiniportPins[] =
       NULL,                                             // Interfaces
       0,                                                // MediumsCount
       NULL,                                             // Mediums
-      SIZEOF_ARRAY(SpeakerTopoPinDataRangePointersBridge),// DataRangesCount
-      SpeakerTopoPinDataRangePointersBridge,            // DataRanges
+      SIZEOF_ARRAY(HeadphoneTopoPinDataRangePointersBridge),// DataRangesCount
+      HeadphoneTopoPinDataRangePointersBridge,            // DataRanges
       KSPIN_DATAFLOW_OUT,                               // DataFlow
       KSPIN_COMMUNICATION_NONE,                         // Communication
-      &KSNODETYPE_SPEAKER,                              // Category
+      &KSNODETYPE_HEADPHONES,                              // Category
       NULL,                                             // Name
       0                                                 // Reserved
     }
@@ -84,69 +84,69 @@ PCPIN_DESCRIPTOR SpeakerTopoMiniportPins[] =
 
 //=============================================================================
 static
-KSJACK_DESCRIPTION SpeakerJackDescBridge =
+KSJACK_DESCRIPTION HeadphoneJackDescBridge =
 {
     KSAUDIO_SPEAKER_STEREO,
     0xB3C98C,               // Color spec for green
-    eConnTypeAtapiInternal,
-    eGeoLocFront,
-    eGenLocInternal,
-    ePortConnIntegratedDevice,
+    eConnType3Point5mm,
+    eGeoLocRight,
+    eGenLocPrimaryBox,
+    ePortConnJack,
     TRUE
 };
 
 // Only return a KSJACK_DESCRIPTION for the physical bridge pin.
 static 
-PKSJACK_DESCRIPTION SpeakerJackDescriptions[] =
+PKSJACK_DESCRIPTION HeadphoneJackDescriptions[] =
 {
     NULL,
-    &SpeakerJackDescBridge
+    &HeadphoneJackDescBridge
 };
 
 static
-PCCONNECTION_DESCRIPTOR SpeakerTopoMiniportConnections[] =
+PCCONNECTION_DESCRIPTOR HeadphoneTopoMiniportConnections[] =
 {
     {PCFILTER_NODE,            KSPIN_TOPO_WAVEOUT_SOURCE,    PCFILTER_NODE,     KSPIN_TOPO_LINEOUT_DEST} //no volume controls
 };
 
 //=============================================================================
 static
-PCPROPERTY_ITEM PropertiesSpeakerTopoFilter[] =
+PCPROPERTY_ITEM PropertiesHeadphoneTopoFilter[] =
 {
     {
         &KSPROPSETID_Jack,
         KSPROPERTY_JACK_DESCRIPTION,
         KSPROPERTY_TYPE_GET |
         KSPROPERTY_TYPE_BASICSUPPORT,
-        PropertyHandler_SpeakerTopoFilter
+        PropertyHandler_HeadphoneTopoFilter
     },
     {
         &KSPROPSETID_Jack,
         KSPROPERTY_JACK_DESCRIPTION2,
         KSPROPERTY_TYPE_GET |
         KSPROPERTY_TYPE_BASICSUPPORT,
-        PropertyHandler_SpeakerTopoFilter
+        PropertyHandler_HeadphoneTopoFilter
     }
 };
 
-DEFINE_PCAUTOMATION_TABLE_PROP(AutomationSpeakerTopoFilter, PropertiesSpeakerTopoFilter);
+DEFINE_PCAUTOMATION_TABLE_PROP(AutomationHeadphoneTopoFilter, PropertiesHeadphoneTopoFilter);
 
 //=============================================================================
 static
-PCFILTER_DESCRIPTOR SpeakerTopoMiniportFilterDescriptor =
+PCFILTER_DESCRIPTOR HeadphoneTopoMiniportFilterDescriptor =
 {
   0,                                            // Version
-  &AutomationSpeakerTopoFilter,                 // AutomationTable
+  &AutomationHeadphoneTopoFilter,                 // AutomationTable
   sizeof(PCPIN_DESCRIPTOR),                     // PinSize
-  SIZEOF_ARRAY(SpeakerTopoMiniportPins),        // PinCount
-  SpeakerTopoMiniportPins,                      // Pins
+  SIZEOF_ARRAY(HeadphoneTopoMiniportPins),        // PinCount
+  HeadphoneTopoMiniportPins,                      // Pins
   sizeof(PCNODE_DESCRIPTOR),                    // NodeSize
   0,           // NodeCount
   NULL,                         // Nodes
-  SIZEOF_ARRAY(SpeakerTopoMiniportConnections), // ConnectionCount
-  SpeakerTopoMiniportConnections,               // Connections
+  SIZEOF_ARRAY(HeadphoneTopoMiniportConnections), // ConnectionCount
+  HeadphoneTopoMiniportConnections,               // Connections
   0,                                            // CategoryCount
   NULL                                          // Categories
 };
 
-#endif // _CSAUDIOACP3X_SPEAKERTOPTABLE_H_
+#endif // _CSAUDIOACP3X_HEADPHONETOPTABLE_H_

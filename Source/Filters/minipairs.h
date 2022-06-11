@@ -14,7 +14,9 @@ Abstract:
 #ifndef _CSAUDIOACP3X_MINIPAIRS_H_
 #define _CSAUDIOACP3X_MINIPAIRS_H_
 
+#include "headphonetopo.h"
 #include "speakertopo.h"
+#include "headphonetoptable.h"
 #include "speakertoptable.h"
 #include "speakerwavtable.h"
 
@@ -94,6 +96,29 @@ ENDPOINT_MINIPAIR SpeakerMiniports =
     ENDPOINT_NO_FLAGS,
 };
 
+static
+ENDPOINT_MINIPAIR HeadphoneMiniports =
+{
+    eHeadphoneDevice,
+    L"TopologyHeadphones",                                     // make sure this or the template name matches with KSNAME_TopologySpeaker in the inf's [Strings] section 
+    NULL,                                                   // optional template name
+    CreateMiniportTopologyCsAudioAcp3x,
+    &HeadphoneTopoMiniportFilterDescriptor,
+    0, NULL,                                                // Interface properties
+    L"WaveHeadphones",                                         // make sure this or the template name matches with KSNAME_WaveSpeaker in the inf's [Strings] section
+    NULL,                                                   // optional template name
+    CreateMiniportWaveRTCsAudioAcp3x,
+    &SpeakerWaveMiniportFilterDescriptor,
+    0,                                                      // Interface properties
+    NULL,
+    SPEAKER_DEVICE_MAX_CHANNELS,
+    SpeakerPinDeviceFormatsAndModes,
+    SIZEOF_ARRAY(SpeakerPinDeviceFormatsAndModes),
+    SpeakerTopologyPhysicalConnections,
+    SIZEOF_ARRAY(SpeakerTopologyPhysicalConnections),
+    ENDPOINT_NO_FLAGS,
+};
+
 //
 // Capture miniports.
 //
@@ -151,6 +176,7 @@ static
 PENDPOINT_MINIPAIR  g_RenderEndpoints[] = 
 {
     &SpeakerMiniports,
+    &HeadphoneMiniports
 };
 
 #define g_cRenderEndpoints  (SIZEOF_ARRAY(g_RenderEndpoints))

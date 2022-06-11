@@ -263,6 +263,7 @@
     </DriverSign>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="headphonetopo.cpp" />
     <ClCompile Include="micarraytopo.cpp" />
     <ClCompile Include="speakertopo.cpp" />
   </ItemGroup>
@@ -277,6 +278,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Exclude="@(ClInclude)" Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd" />
+    <ClInclude Include="headphonetopo.h" />
+    <ClInclude Include="headphonetoptable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
