@@ -39,20 +39,6 @@ PropertyHandler_BasicSupport
 );
 
 NTSTATUS
-PropertyHandler_BasicSupportVolume
-(
-    _In_  PPCPROPERTY_REQUEST   PropertyRequest,
-    _In_  ULONG                 MaxChannels
-);
-
-NTSTATUS
-PropertyHandler_BasicSupportMute
-(
-    _In_  PPCPROPERTY_REQUEST   PropertyRequest,
-    _In_  ULONG                 MaxChannels
-);
-
-NTSTATUS
 PropertyHandler_BasicSupportPeakMeter2
 (
     _In_  PPCPROPERTY_REQUEST   PropertyRequest,
