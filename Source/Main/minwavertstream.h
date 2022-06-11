@@ -106,9 +106,6 @@ protected:
     ULONG                       m_byteDisplacementCarryForward;
     ULONG                       m_ulDmaMovementRate;
     BOOL                        m_bLfxEnabled;
-    PBOOL                       m_pbMuted;
-    PLONG                       m_plVolumeLevel;
-    PLONG                       m_plPeakMeter;
     PWAVEFORMATEXTENSIBLE       m_pWfExt;
     ULONG                       m_ulContentId;
     CSaveData                   m_SaveData;

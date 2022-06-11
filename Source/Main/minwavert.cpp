@@ -127,18 +127,6 @@ Return Value:
         m_pMixFormat = NULL;
     }
 
-    if (m_pbMuted)
-    {
-        ExFreePoolWithTag(m_pbMuted, MINWAVERT_POOLTAG);
-        m_pbMuted = NULL;
-    }
-
-    if (m_plVolumeLevel)
-    {
-        ExFreePoolWithTag(m_plVolumeLevel, MINWAVERT_POOLTAG);
-        m_plVolumeLevel = NULL;
-    }
-
     if (m_pDrmPort)
     {
         m_pDrmPort->Release();
@@ -369,12 +357,9 @@ Return Value:
     //
     m_ulSystemAllocated                 = 0;
     m_SystemStreams                     = NULL;
-    m_bGfxEnabled                       = FALSE;
     m_pMixFormat                        = NULL;
     m_pDeviceFormat                     = NULL;
     m_ulMixDrmContentId                 = 0;
-    m_pbMuted = NULL;
-    m_plVolumeLevel = NULL;
     RtlZeroMemory(&m_MixDrmRights, sizeof(m_MixDrmRights));
 
     //

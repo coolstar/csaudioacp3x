@@ -58,24 +58,6 @@ Return Value:
         m_pTimer = NULL;
     }
 
-    if (m_pbMuted)
-    {
-        ExFreePoolWithTag( m_pbMuted, MINWAVERTSTREAM_POOLTAG );
-        m_pbMuted = NULL;
-    }
-
-    if (m_plVolumeLevel)
-    {
-        ExFreePoolWithTag( m_plVolumeLevel, MINWAVERTSTREAM_POOLTAG );
-        m_plVolumeLevel = NULL;
-    }
-
-    if (m_plPeakMeter)
-    {
-        ExFreePoolWithTag( m_plPeakMeter, MINWAVERTSTREAM_POOLTAG );
-        m_plPeakMeter = NULL;
-    }
-
     if (m_pWfExt)
     {
         ExFreePoolWithTag( m_pWfExt, MINWAVERTSTREAM_POOLTAG );
@@ -206,9 +188,6 @@ Return Value:
     m_ulDmaMovementRate = 0;
     m_byteDisplacementCarryForward = 0;
     m_bLfxEnabled = FALSE;
-    m_pbMuted = NULL;
-    m_plVolumeLevel = NULL;
-    m_plPeakMeter = NULL;
     m_pWfExt = NULL;
     m_ullLinearPosition = 0;
     m_ullPresentationPosition = 0;
@@ -275,24 +254,6 @@ Return Value:
         return STATUS_INSUFFICIENT_RESOURCES;
     }
     RtlCopyMemory(m_pWfExt, pWfEx, sizeof(WAVEFORMATEX) + pWfEx->cbSize);
-
-    m_pbMuted = (PBOOL)ExAllocatePool2(POOL_FLAG_NON_PAGED, m_pWfExt->Format.nChannels * sizeof(BOOL), MINWAVERTSTREAM_POOLTAG);
-    if (m_pbMuted == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-
-    m_plVolumeLevel = (PLONG)ExAllocatePool2(POOL_FLAG_NON_PAGED, m_pWfExt->Format.nChannels * sizeof(LONG), MINWAVERTSTREAM_POOLTAG);
-    if (m_plVolumeLevel == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-
-    m_plPeakMeter = (PLONG)ExAllocatePool2(POOL_FLAG_NON_PAGED, m_pWfExt->Format.nChannels * sizeof(LONG), MINWAVERTSTREAM_POOLTAG);
-    if (m_plPeakMeter == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
 
     if (m_bCapture)
     {
@@ -543,6 +504,8 @@ VOID CMiniportWaveRTStream::FreeBufferWithNotification
 
     PAGED_CODE();
 
+    DbgPrint("FreeAudioBuffer\n");
+
     if (Mdl_ != NULL)
     {
         if (m_pDmaBuffer != NULL)
@@ -691,6 +654,8 @@ _In_        ULONG       Size_
     UNREFERENCED_PARAMETER(Size_);
 
     PAGED_CODE();
+
+    DbgPrint("FreeAudioBuffer\n");
 
     if (Mdl_ != NULL)
     {

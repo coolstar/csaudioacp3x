@@ -41,9 +41,6 @@ private:
     // weak ref of running streams.
     PCMiniportWaveRTStream            * m_SystemStreams;
 
-    BOOL                                m_bGfxEnabled;
-    PBOOL                               m_pbMuted;
-    PLONG                               m_plVolumeLevel;
     PKSDATAFORMAT_WAVEFORMATEXTENSIBLE  m_pMixFormat;
     PKSDATAFORMAT_WAVEFORMATEXTENSIBLE  m_pDeviceFormat;
     PCFILTER_DESCRIPTOR                 m_FilterDesc;
@@ -203,58 +200,6 @@ public:
         return m_pAdapterCommon; 
     };
 #pragma code_seg()
-
-    //---------------------------------------------------------------------------------------------------------
-    // volume
-    //---------------------------------------------------------------------------------------------------------
-    NTSTATUS GetVolumeChannelCount
-    (
-        _Out_  UINT32* pulChannelCount
-    );
-
-    NTSTATUS GetVolumeSteppings
-    (
-        _Out_writes_bytes_(_ui32DataSize)  PKSPROPERTY_STEPPING_LONG _pKsPropStepLong,
-        _In_  UINT32    _ui32DataSize
-    );
-
-    NTSTATUS GetChannelVolume
-    (
-        _In_  UINT32    _uiChannel,
-        _Out_  LONG* _pVolume
-    );
-
-    NTSTATUS SetChannelVolume
-    (
-        _In_  UINT32    _uiChannel,
-        _In_  LONG      _Volume
-    );
-
-    //-----------------------------------------------------------------------------
-    // mute
-    //-----------------------------------------------------------------------------
-    NTSTATUS GetMuteChannelCount
-    (
-        _Out_  UINT32* pulChannelCount
-    );
-
-    NTSTATUS GetMuteSteppings
-    (
-        _Out_writes_bytes_(_ui32DataSize)  PKSPROPERTY_STEPPING_LONG _pKsPropStepLong,
-        _In_  UINT32    _ui32DataSize
-    );
-
-    NTSTATUS GetChannelMute
-    (
-        _In_  UINT32    _uiChannel,
-        _Out_  BOOL* _pbMute
-    );
-
-    NTSTATUS SetChannelMute
-    (
-        _In_  UINT32    _uiChannel,
-        _In_  BOOL      _bMute
-    );
 
 private:
     _IRQL_raises_(DISPATCH_LEVEL)
