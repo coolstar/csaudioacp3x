@@ -265,6 +265,7 @@
   <ItemGroup>
     <ClCompile Include="headphonetopo.cpp" />
     <ClCompile Include="micarraytopo.cpp" />
+    <ClCompile Include="micjacktopo.cpp" />
     <ClCompile Include="speakertopo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -277,8 +278,17 @@
     <None Exclude="@(None)" Include="*.def;*.bat;*.hpj;*.asmx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Exclude="@(ClInclude)" Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd" />
     <ClInclude Include="headphonetopo.h" />
+    <ClInclude Include="headphonetoptable.h" />
+    <ClInclude Include="micarray1toptable.h" />
+    <ClInclude Include="micarraytopo.h" />
+    <ClInclude Include="micarraywavtable.h" />
+    <ClInclude Include="micjacktopo.h" />
+    <ClInclude Include="micjacktoptable.h" />
+    <ClInclude Include="minipairs.h" />
+    <ClInclude Include="speakertopo.h" />
+    <ClInclude Include="speakertoptable.h" />
+    <ClInclude Include="speakerwavtable.h" />
     <ClInclude Include="headphonetoptable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

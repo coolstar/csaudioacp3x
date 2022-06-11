@@ -1038,28 +1038,28 @@ NTSTATUS CMiniportWaveRTStream::SetState
             m_bEoSReceived = FALSE;
             m_bLastBufferRendered = FALSE;
 
-            DbgPrint("Stop DMA\n");
+            DbgPrint("Stop DMA (device %d)\n", m_pMiniport->m_DeviceType);
 
             KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
             break;
 
         case KSSTATE_ACQUIRE:
-            DbgPrint("Acquire DMA\n");
+            DbgPrint("Acquire DMA (device %d)\n", m_pMiniport->m_DeviceType);
             if (m_KsState == KSSTATE_STOP)
             {
-                DbgPrint("Acquire DMA [stopped]\n");
+                DbgPrint("Acquire DMA [stopped (device %d)\n", m_pMiniport->m_DeviceType);
                 // Acquire stream resources
             }
             break;
             
         case KSSTATE_PAUSE:
-            DbgPrint("Pause DMA\n");
+            DbgPrint("Pause DMA (device %d)\n", m_pMiniport->m_DeviceType);
             if (m_KsState > KSSTATE_PAUSE)
             {
                 //
                 // Run -> Pause
                 //
-                DbgPrint("Pause DMA [Ran]\n");
+                DbgPrint("Pause DMA [Ran] (device %d)\n", m_pMiniport->m_DeviceType);
 
                 // Pause DMA
                 if (m_ulNotificationIntervalMs > 0)
@@ -1089,7 +1089,7 @@ NTSTATUS CMiniportWaveRTStream::SetState
 
         case KSSTATE_RUN:
             // Start DMA
-            DbgPrint("Start DMA\n");
+            DbgPrint("Start DMA (device %d)\n", m_pMiniport->m_DeviceType);
 
             LARGE_INTEGER ullPerfCounterTemp;
             ullPerfCounterTemp = KeQueryPerformanceCounter(&m_ullPerformanceCounterFrequency);

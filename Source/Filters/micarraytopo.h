@@ -45,7 +45,7 @@ public:
         CMiniportTopologyCsAudioAcp3x(FilterDesc, DeviceMaxChannels),
         m_DeviceType(DeviceType)
     {
-        ASSERT(m_DeviceType == eMicArrayDevice1);
+        ASSERT(m_DeviceType == eMicArrayDevice1 || m_DeviceType == eMicJackDevice);
     }
 
     ~CMicArrayMiniportTopology();

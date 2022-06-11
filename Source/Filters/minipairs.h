@@ -20,7 +20,9 @@ Abstract:
 #include "speakertoptable.h"
 #include "speakerwavtable.h"
 
+#include "micjacktopo.h"
 #include "micarraytopo.h"
+#include "micjacktoptable.h"
 #include "micarray1toptable.h"
 #include "micarraywavtable.h"
 
@@ -166,6 +168,29 @@ ENDPOINT_MINIPAIR MicArray1Miniports =
     ENDPOINT_NO_FLAGS,
 };
 
+static
+ENDPOINT_MINIPAIR MicJackMiniports =
+{
+    eMicJackDevice,
+    L"TopologyMicJack",                   // make sure this or the template name matches with KSNAME_TopologyMicArray1 in the inf's [Strings] section 
+    NULL,                                   // optional template name
+    CreateMicArrayMiniportTopology,
+    &MicJackTopoMiniportFilterDescriptor,
+    0, NULL,                                // Interface properties
+    L"WaveMicJack",                       // make sure this or the tempalte name matches with KSNAME_WaveMicArray1 in the inf's [Strings] section
+    NULL,                                   // optional template name
+    CreateMiniportWaveRTCsAudioAcp3x,
+    &MicArrayWaveMiniportFilterDescriptor,
+    0,                                      // Interface properties
+    NULL,
+    MICARRAY_DEVICE_MAX_CHANNELS,
+    MicArrayPinDeviceFormatsAndModes,
+    SIZEOF_ARRAY(MicArrayPinDeviceFormatsAndModes),
+    MicArray1TopologyPhysicalConnections,
+    SIZEOF_ARRAY(MicArray1TopologyPhysicalConnections),
+    ENDPOINT_NO_FLAGS,
+};
+
 
 //=============================================================================
 //
@@ -190,6 +215,7 @@ static
 PENDPOINT_MINIPAIR  g_CaptureEndpoints[] =
 {
     &MicArray1Miniports,
+    //&MicJackMiniports
 };
 
 #define g_cCaptureEndpoints (SIZEOF_ARRAY(g_CaptureEndpoints))

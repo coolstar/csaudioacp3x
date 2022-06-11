@@ -27,6 +27,9 @@
     <ClCompile Include="headphonetopo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="micjacktopo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd">
@@ -53,7 +56,13 @@
     <ClInclude Include="headphonetoptable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="micjacktoptable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="headphonetopo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="micjacktopo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
