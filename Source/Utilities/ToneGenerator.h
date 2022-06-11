@@ -10,8 +10,8 @@ Abstract:
 
     Declaration of Simple Audio Sample sine wave generator.
 --*/
-#ifndef _SIMPLEAUDIOSAMPLE_TONEGENERATOR_H
-#define _SIMPLEAUDIOSAMPLE_TONEGENERATOR_H
+#ifndef _CSAUDIOACP3X_TONEGENERATOR_H
+#define _CSAUDIOACP3X_TONEGENERATOR_H
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -71,4 +71,4 @@ private:
     );
 };
 
-#endif // _SIMPLEAUDIOSAMPLE_TONEGENERATOR_H
+#endif // _CSAUDIOACP3X_TONEGENERATOR_H

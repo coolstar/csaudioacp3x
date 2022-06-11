@@ -11,8 +11,8 @@ Abstract:
     Local audio endpoint filter definitions. 
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_MINIPAIRS_H_
-#define _SIMPLEAUDIOSAMPLE_MINIPAIRS_H_
+#ifndef _CSAUDIOACP3X_MINIPAIRS_H_
+#define _CSAUDIOACP3X_MINIPAIRS_H_
 
 #include "speakertopo.h"
 #include "speakertoptable.h"
@@ -24,7 +24,7 @@ Abstract:
 
 
 NTSTATUS
-CreateMiniportWaveRTSimpleAudioSample
+CreateMiniportWaveRTCsAudioAcp3x
 ( 
     _Out_       PUNKNOWN *,
     _In_        REFCLSID,
@@ -36,7 +36,7 @@ CreateMiniportWaveRTSimpleAudioSample
 );
 
 NTSTATUS
-CreateMiniportTopologySimpleAudioSample
+CreateMiniportTopologyCsAudioAcp3x
 ( 
     _Out_       PUNKNOWN *,
     _In_        REFCLSID,
@@ -77,12 +77,12 @@ ENDPOINT_MINIPAIR SpeakerMiniports =
     eSpeakerDevice,
     L"TopologySpeaker",                                     // make sure this or the template name matches with KSNAME_TopologySpeaker in the inf's [Strings] section 
     NULL,                                                   // optional template name
-    CreateMiniportTopologySimpleAudioSample,
+    CreateMiniportTopologyCsAudioAcp3x,
     &SpeakerTopoMiniportFilterDescriptor,
     0, NULL,                                                // Interface properties
     L"WaveSpeaker",                                         // make sure this or the template name matches with KSNAME_WaveSpeaker in the inf's [Strings] section
     NULL,                                                   // optional template name
-    CreateMiniportWaveRTSimpleAudioSample,
+    CreateMiniportWaveRTCsAudioAcp3x,
     &SpeakerWaveMiniportFilterDescriptor,
     0,                                                      // Interface properties
     NULL,
@@ -129,7 +129,7 @@ ENDPOINT_MINIPAIR MicArray1Miniports =
     0, NULL,                                // Interface properties
     L"WaveMicArray1",                       // make sure this or the tempalte name matches with KSNAME_WaveMicArray1 in the inf's [Strings] section
     NULL,                                   // optional template name
-    CreateMiniportWaveRTSimpleAudioSample,
+    CreateMiniportWaveRTCsAudioAcp3x,
     &MicArrayWaveMiniportFilterDescriptor,
     0,                                      // Interface properties
     NULL,
@@ -174,4 +174,4 @@ PENDPOINT_MINIPAIR  g_CaptureEndpoints[] =
 //
 #define g_MaxMiniports  ((g_cRenderEndpoints + g_cCaptureEndpoints) * 2)
 
-#endif // _SIMPLEAUDIOSAMPLE_MINIPAIRS_H_
+#endif // _CSAUDIOACP3X_MINIPAIRS_H_

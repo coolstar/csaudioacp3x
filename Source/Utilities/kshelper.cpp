@@ -156,20 +156,20 @@ Return Value:
 //-----------------------------------------------------------------------------
 #pragma code_seg("PAGE")
 NTSTATUS
-SimpleAudioSamplePropertyDispatch
+CsAudioAcp3xPropertyDispatch
 (
     _In_ PPCPROPERTY_REQUEST PropertyRequest
 )
 /*++
-    Handles and dispatches a SIMPLEAUDIOSAMPLE_PROPERTY_ITEM.
+    Handles and dispatches a CSAUDIOACP3X_PROPERTY_ITEM.
 
     Use this as the property handler only if the property item is a
-    SIMPLEAUDIOSAMPLE_PROPERTY_ITEM.
+    CSAUDIOACP3X_PROPERTY_ITEM.
 --*/
 {
     PAGED_CODE();
 
-    SIMPLEAUDIOSAMPLE_PROPERTY_ITEM* item = (SIMPLEAUDIOSAMPLE_PROPERTY_ITEM*)PropertyRequest->PropertyItem;
+    CSAUDIOACP3X_PROPERTY_ITEM* item = (CSAUDIOACP3X_PROPERTY_ITEM*)PropertyRequest->PropertyItem;
 
     if (PropertyRequest->Verb & KSPROPERTY_TYPE_BASICSUPPORT)
     {

@@ -11,8 +11,8 @@ Abstract:
     Declaration of wave miniport tables for the render endpoints.
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_SPEAKERWAVTABLE_H_
-#define _SIMPLEAUDIOSAMPLE_SPEAKERWAVTABLE_H_
+#ifndef _CSAUDIOACP3X_SPEAKERWAVTABLE_H_
+#define _CSAUDIOACP3X_SPEAKERWAVTABLE_H_
 
 // To keep the code simple assume device supports only 48KHz, 16-bit, stereo (PCM and NON-PCM)
 
@@ -243,4 +243,4 @@ PCFILTER_DESCRIPTOR SpeakerWaveMiniportFilterDescriptor =
     NULL                                            // Categories  - use defaults (audio, render, capture)
 };
 
-#endif // _SIMPLEAUDIOSAMPLE_SPEAKERWAVTABLE_H_
+#endif // _CSAUDIOACP3X_SPEAKERWAVTABLE_H_

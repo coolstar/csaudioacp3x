@@ -13,8 +13,8 @@ to save data to disk.
 
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_SAVEDATA_H
-#define _SIMPLEAUDIOSAMPLE_SAVEDATA_H
+#ifndef _CSAUDIOACP3X_SAVEDATA_H
+#define _CSAUDIOACP3X_SAVEDATA_H
 
 //-----------------------------------------------------------------------------
 //  Forward declaration

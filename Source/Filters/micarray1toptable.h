@@ -12,8 +12,8 @@ Abstract:
 
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_MICARRAY1TOPTABLE_H_
-#define _SIMPLEAUDIOSAMPLE_MICARRAY1TOPTABLE_H_
+#ifndef _CSAUDIOACP3X_MICARRAY1TOPTABLE_H_
+#define _CSAUDIOACP3X_MICARRAY1TOPTABLE_H_
 
 //
 // {6ae81ff4-203e-4fe1-88aa-f2d57775cd4a}
@@ -207,4 +207,4 @@ PCFILTER_DESCRIPTOR MicArray1TopoMiniportFilterDescriptor =
   NULL                                          // Categories
 };
 
-#endif // _SIMPLEAUDIOSAMPLE_MICARRAY1TOPTABLE_H_
+#endif // _CSAUDIOACP3X_MICARRAY1TOPTABLE_H_

@@ -67,7 +67,7 @@ ToneGenerator::~ToneGenerator()
 {
     if (m_PartialFrame)
     {
-        ExFreePoolWithTag(m_PartialFrame, SIMPLEAUDIOSAMPLE_POOLTAG);
+        ExFreePoolWithTag(m_PartialFrame, CSAUDIOACP3X_POOLTAG);
         m_PartialFrame = NULL;
         m_PartialFrameBytes = 0;
     }
@@ -278,7 +278,7 @@ NTSTATUS ToneGenerator::Init
     m_PartialFrame = (BYTE*)ExAllocatePool2(
                                     POOL_FLAG_NON_PAGED,
                                     m_FrameSize,
-                                    SIMPLEAUDIOSAMPLE_POOLTAG);
+                                    CSAUDIOACP3X_POOLTAG);
 
     IF_TRUE_ACTION_JUMP(m_PartialFrame == NULL, status = STATUS_INSUFFICIENT_RESOURCES, Done);
     

@@ -11,8 +11,8 @@ Abstract:
     Header file for common stuff.
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_DEFINITIONS_H_
-#define _SIMPLEAUDIOSAMPLE_DEFINITIONS_H_
+#ifndef _CSAUDIOACP3X_DEFINITIONS_H_
+#define _CSAUDIOACP3X_DEFINITIONS_H_
 
 #include <portcls.h>
 #include <stdunk.h>
@@ -29,16 +29,16 @@ Abstract:
 
 // Product Id
 // {836BA6D1-3FF7-4411-8BCD-469553452DCE}
-#define STATIC_PID_SIMPLEAUDIOSAMPLE\
+#define STATIC_PID_CSAUDIOACP3X\
     0x836ba6d1, 0x3ff7, 0x4411, 0x8b, 0xcd, 0x46, 0x95, 0x53, 0x45, 0x2d, 0xce
-DEFINE_GUIDSTRUCT("836BA6D1-3FF7-4411-8BCD-469553452DCE", PID_SIMPLEAUDIOSAMPLE);
-#define PID_SIMPLEAUDIOSAMPLE DEFINE_GUIDNAMED(PID_SIMPLEAUDIOSAMPLE)
+DEFINE_GUIDSTRUCT("836BA6D1-3FF7-4411-8BCD-469553452DCE", PID_CSAUDIOACP3X);
+#define PID_CSAUDIOACP3X DEFINE_GUIDNAMED(PID_CSAUDIOACP3X)
 
-// Pool tag used for SIMPLEAUDIOSAMPLE allocations
-#define SIMPLEAUDIOSAMPLE_POOLTAG               'SASM'  
+// Pool tag used for CSAUDIOACP3X allocations
+#define CSAUDIOACP3X_POOLTAG               'SASM'  
 
 // Debug module name
-#define STR_MODULENAME              "SIMPLEAUDIOSAMPLE: "
+#define STR_MODULENAME              "CSAUDIOACP3X: "
 
 // Debug utility macros
 #define D_FUNC                      4
@@ -195,4 +195,4 @@ NTSTATUS PropertyHandler_GenericPin
 #include "common.h"
 #include "kshelper.h"
 
-#endif // _SIMPLEAUDIOSAMPLE_DEFINITIONS_H_
+#endif // _CSAUDIOACP3X_DEFINITIONS_H_

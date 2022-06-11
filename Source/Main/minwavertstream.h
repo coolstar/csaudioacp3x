@@ -11,8 +11,8 @@ Abstract:
     Definition of wavert miniport class.
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_MINWAVERTSTREAM_H_
-#define _SIMPLEAUDIOSAMPLE_MINWAVERTSTREAM_H_
+#ifndef _CSAUDIOACP3X_MINWAVERTSTREAM_H_
+#define _CSAUDIOACP3X_MINWAVERTSTREAM_H_
 
 #include "savedata.h"
 #include "ToneGenerator.h"
@@ -244,5 +244,5 @@ private:
     
 };
 typedef CMiniportWaveRTStream *PCMiniportWaveRTStream;
-#endif // _SIMPLEAUDIOSAMPLE_MINWAVERTSTREAM_H_
+#endif // _CSAUDIOACP3X_MINWAVERTSTREAM_H_
 

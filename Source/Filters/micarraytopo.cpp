@@ -170,7 +170,7 @@ Return Value:
     PAGED_CODE();
 
     return
-        CMiniportTopologySimpleAudioSample::DataRangeIntersection
+        CMiniportTopologyCsAudioAcp3x::DataRangeIntersection
         (
             PinId,
             ClientDataRange,
@@ -210,7 +210,7 @@ Return Value:
 
     ASSERT(OutFilterDescriptor);
 
-    return CMiniportTopologySimpleAudioSample::GetDescription(OutFilterDescriptor);
+    return CMiniportTopologyCsAudioAcp3x::GetDescription(OutFilterDescriptor);
 } // GetDescription
 
 //=============================================================================
@@ -257,7 +257,7 @@ Return Value:
     NTSTATUS                    ntStatus;
 
     ntStatus =
-        CMiniportTopologySimpleAudioSample::Init
+        CMiniportTopologyCsAudioAcp3x::Init
         (
             UnknownAdapter,
             Port_

@@ -13,8 +13,8 @@ Abstract:
     for the topology.
 --*/
 
-#ifndef _SIMPLEAUDIOSAMPLE_HW_H_
-#define _SIMPLEAUDIOSAMPLE_HW_H_
+#ifndef _CSAUDIOACP3X_HW_H_
+#define _CSAUDIOACP3X_HW_H_
 
 //=============================================================================
 // Defines
@@ -26,11 +26,11 @@ Abstract:
 // Classes
 //=============================================================================
 ///////////////////////////////////////////////////////////////////////////////
-// CSimpleAudioSampleHW
+// CCsAudioAcp3xHW
 // This class represents virtual Simple Audio Sample HW. An array representing volume
 // registers and mute registers.
 
-class CSimpleAudioSampleHW
+class CCsAudioAcp3xHW
 {
 public:
 protected:
@@ -43,7 +43,7 @@ protected:
 private:
 
 public:
-    CSimpleAudioSampleHW();
+    CCsAudioAcp3xHW();
     
     void                        MixerReset();
     BOOL                        bGetDevSpecific();
@@ -76,6 +76,6 @@ public:
 protected:
 private:
 };
-typedef CSimpleAudioSampleHW    *PCSimpleAudioSampleHW;
+typedef CCsAudioAcp3xHW    *PCCsAudioAcp3xHW;
 
-#endif  // _SIMPLEAUDIOSAMPLE_HW_H_
+#endif  // _CSAUDIOACP3X_HW_H_

@@ -16,12 +16,12 @@ Abstract:
 #include "hw.h"
 
 //=============================================================================
-// CSimpleAudioSampleHW
+// CCsAudioAcp3xHW
 //=============================================================================
 
 //=============================================================================
 #pragma code_seg("PAGE")
-CSimpleAudioSampleHW::CSimpleAudioSampleHW()
+CCsAudioAcp3xHW::CCsAudioAcp3xHW()
 : m_ulMux(0),
     m_bDevSpecific(FALSE),
     m_iDevSpecific(0),
@@ -30,7 +30,7 @@ CSimpleAudioSampleHW::CSimpleAudioSampleHW()
 
 Routine Description:
 
-    Constructor for SimpleAudioSampleHW. 
+    Constructor for CsAudioAcp3xHW. 
 
 Arguments:
 
@@ -43,13 +43,13 @@ Return Value:
     PAGED_CODE();
     
     MixerReset();
-} // SimpleAudioSampleHW
+} // CsAudioAcp3xHW
 #pragma code_seg()
 
 
 //=============================================================================
 BOOL
-CSimpleAudioSampleHW::bGetDevSpecific()
+CCsAudioAcp3xHW::bGetDevSpecific()
 /*++
 
 Routine Description:
@@ -71,7 +71,7 @@ Return Value:
 
 //=============================================================================
 void
-CSimpleAudioSampleHW::bSetDevSpecific
+CCsAudioAcp3xHW::bSetDevSpecific
 (
     _In_  BOOL                bDevSpecific
 )
@@ -96,7 +96,7 @@ Return Value:
 
 //=============================================================================
 INT
-CSimpleAudioSampleHW::iGetDevSpecific()
+CCsAudioAcp3xHW::iGetDevSpecific()
 /*++
 
 Routine Description:
@@ -118,7 +118,7 @@ Return Value:
 
 //=============================================================================
 void
-CSimpleAudioSampleHW::iSetDevSpecific
+CCsAudioAcp3xHW::iSetDevSpecific
 (
     _In_  INT                 iDevSpecific
 )
@@ -143,7 +143,7 @@ Return Value:
 
 //=============================================================================
 UINT
-CSimpleAudioSampleHW::uiGetDevSpecific()
+CCsAudioAcp3xHW::uiGetDevSpecific()
 /*++
 
 Routine Description:
@@ -165,7 +165,7 @@ Return Value:
 
 //=============================================================================
 void
-CSimpleAudioSampleHW::uiSetDevSpecific
+CCsAudioAcp3xHW::uiSetDevSpecific
 (
     _In_  UINT                uiDevSpecific
 )
@@ -190,7 +190,7 @@ Return Value:
 
 //=============================================================================
 ULONG                       
-CSimpleAudioSampleHW::GetMixerMux()
+CCsAudioAcp3xHW::GetMixerMux()
 /*++
 
 Routine Description:
@@ -210,7 +210,7 @@ Return Value:
 
 //=============================================================================
 LONG
-CSimpleAudioSampleHW::GetMixerPeakMeter
+CCsAudioAcp3xHW::GetMixerPeakMeter
 (   
     _In_  ULONG                   ulNode,
     _In_  ULONG                   ulChannel
@@ -246,7 +246,7 @@ Return Value:
 //=============================================================================
 #pragma code_seg("PAGE")
 void 
-CSimpleAudioSampleHW::MixerReset()
+CCsAudioAcp3xHW::MixerReset()
 /*++
 
 Routine Description:
@@ -275,7 +275,7 @@ Return Value:
 
 //=============================================================================
 void                        
-CSimpleAudioSampleHW::SetMixerMux
+CCsAudioAcp3xHW::SetMixerMux
 (
     _In_  ULONG                   ulNode
 )
