@@ -85,50 +85,6 @@ Return Value:
 //=============================================================================
 #pragma code_seg("PAGE")
 
-NTSTATUS CMiniportWaveRTStream::ReadRegistrySettings()
-{
-    PAGED_CODE();
-
-    NTSTATUS                    ntStatus;
-    UNICODE_STRING              parametersPath;
-
-    RTL_QUERY_REGISTRY_TABLE    paramTable[] = {
-        // QueryRoutine     Flags                                               Name                            EntryContext                            DefaultType                                                     DefaultData                                 DefaultLength
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"HostCaptureToneFrequency",        &m_ulHostCaptureToneFrequency,          (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD,  &m_ulHostCaptureToneFrequency,              sizeof(DWORD) },
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"HostCaptureToneAmplitude",        &m_dwHostCaptureToneAmplitude,          (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD,  &m_dwHostCaptureToneAmplitude,              sizeof(DWORD) },
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"HostCaptureToneDCOffset",         &m_dwHostCaptureToneDCOffset,           (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD,  &m_dwHostCaptureToneDCOffset,               sizeof(DWORD) },
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"HostCaptureToneInitialPhase",     &m_dwHostCaptureToneInitialPhase,       (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD,  &m_dwHostCaptureToneInitialPhase,           sizeof(DWORD) },
-        { NULL,   0,                                                        NULL,                               NULL,                                   0,                                                              NULL,                                       0 }
-    };
-
-    RtlInitUnicodeString(&parametersPath, NULL);
-
-    // The sizeof(WCHAR) is added to the maximum length, for allowing a space for null termination of the string.
-    parametersPath.MaximumLength =
-        g_RegistryPath.Length + sizeof(L"\\Parameters") + sizeof(WCHAR);
-
-    parametersPath.Buffer = (PWCH)ExAllocatePool2(POOL_FLAG_PAGED, parametersPath.MaximumLength, MINWAVERT_POOLTAG);
-    if (parametersPath.Buffer == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-
-    RtlAppendUnicodeToString(&parametersPath, g_RegistryPath.Buffer);
-    RtlAppendUnicodeToString(&parametersPath, L"\\Parameters");
-
-    ntStatus = RtlQueryRegistryValues(
-        RTL_REGISTRY_ABSOLUTE | RTL_REGISTRY_OPTIONAL,
-        parametersPath.Buffer,
-        &paramTable[0],
-        NULL,
-        NULL
-    );
-
-    ExFreePool(parametersPath.Buffer);
-
-    return ntStatus;
-}
-
 NTSTATUS
 CMiniportWaveRTStream::Init
 ( 
@@ -200,11 +156,6 @@ Return Value:
     m_bEoSReceived = FALSE;
     m_bLastBufferRendered = FALSE;
 
-    m_ulHostCaptureToneFrequency = IsEqualGUID(SignalProcessingMode, AUDIO_SIGNALPROCESSINGMODE_RAW) ? 1000 : 2000;
-    m_dwHostCaptureToneAmplitude = 50;
-    m_dwHostCaptureToneDCOffset = 0;
-    m_dwHostCaptureToneInitialPhase = 0;
-
     m_pPortStream = PortStream_;
     InitializeListHead(&m_NotificationList);
     m_ulNotificationIntervalMs = 0;
@@ -257,74 +208,12 @@ Return Value:
 
     if (m_bCapture)
     {
-        ReadRegistrySettings();
-        DWORD toneFrequency = 0;
-        DWORD toneAmplitude = 0;
-        DWORD toneDCOffset = 0;
-        DWORD toneInitialPhase = 0;
 
-        double toneAmplitudeDouble = 0;
-        double toneDCOffsetDouble = 0;
-        double toneInitialPhaseDouble = 0;
-
-        toneFrequency = m_ulHostCaptureToneFrequency;
-        toneAmplitude = m_dwHostCaptureToneAmplitude;
-        toneDCOffset = m_dwHostCaptureToneDCOffset;
-        toneInitialPhase = m_dwHostCaptureToneInitialPhase;
-
-        if (labs(toneAmplitude) > 100)
-        {
-            toneAmplitude = toneAmplitude > 0 ? 100 : -100;
-        }
-
-        if (labs(toneDCOffset) > 100)
-        {
-            toneDCOffset = toneDCOffset > 0 ? 100 : -100;
-        }
-
-        DWORD abssum = labs(toneAmplitude) + labs(toneDCOffset);
-
-        if (abssum > 100)
-        {
-            toneAmplitudeDouble = ((double)toneAmplitude) / abssum;
-            toneDCOffsetDouble = ((double)toneDCOffset) / abssum;
-        }
-        else
-        {
-            toneAmplitudeDouble = ((double)toneAmplitude) / 100.0;
-            toneDCOffsetDouble = ((double)toneDCOffset) / 100.0;
-        }
-
-        if (labs(toneInitialPhase) > 31416)
-        {
-            toneInitialPhase = toneInitialPhase > 0 ? 31416 : -31416;
-        }
-
-        toneInitialPhaseDouble = (double)toneInitialPhase / 10000;
-
-        ntStatus = m_ToneGenerator.Init(toneFrequency, toneAmplitudeDouble, toneDCOffsetDouble, toneInitialPhaseDouble, m_pWfExt);
-
-        if (!NT_SUCCESS(ntStatus))
-        {
-            return ntStatus;
-        }
+        //Initialize Capture hardware
     }
-    else if (!g_DoNotCreateDataFiles)
+    else
     {
-        //
-        // Create an output file for the render data.
-        //
-        DPF(D_TERSE, ("SaveData %p", &m_SaveData));
-        ntStatus = m_SaveData.SetDataFormat(DataFormat_);
-        if (NT_SUCCESS(ntStatus))
-        {
-            ntStatus = m_SaveData.Initialize();
-        }
-    
-        if (!NT_SUCCESS(ntStatus))
-        {
-            return ntStatus;
-        }
+        //Initialize Render hardware
     }
 
     //
@@ -441,15 +330,7 @@ NTSTATUS CMiniportWaveRTStream::AllocateBufferWithNotification
     
     if (!m_bCapture && (!g_DoNotCreateDataFiles))
     {
-        NTSTATUS ntStatus;
-        
-        // Simple Audio Sample uses following buffer to hold data before writing to a file.
-        // Allocating larger buffer will reduce File I/O operations.
-        ntStatus = m_SaveData.SetMaxWriteSize(RequestedSize_ * 4);
-        if (!NT_SUCCESS(ntStatus))
-        {
-            return ntStatus;
-        }
+        //Program buffer into hardware
     }
 
     PHYSICAL_ADDRESS highAddress;
@@ -1157,29 +1038,28 @@ NTSTATUS CMiniportWaveRTStream::SetState
             m_bEoSReceived = FALSE;
             m_bLastBufferRendered = FALSE;
 
-            KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
+            DbgPrint("Stop DMA\n");
 
-            // Wait until all work items are completed.
-            if (!m_bCapture && !g_DoNotCreateDataFiles)
-            {
-                m_SaveData.WaitAllWorkItems();
-            }
+            KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
             break;
 
         case KSSTATE_ACQUIRE:
+            DbgPrint("Acquire DMA\n");
             if (m_KsState == KSSTATE_STOP)
             {
+                DbgPrint("Acquire DMA [stopped]\n");
                 // Acquire stream resources
             }
             break;
             
         case KSSTATE_PAUSE:
-
+            DbgPrint("Pause DMA\n");
             if (m_KsState > KSSTATE_PAUSE)
             {
                 //
                 // Run -> Pause
                 //
+                DbgPrint("Pause DMA [Ran]\n");
 
                 // Pause DMA
                 if (m_ulNotificationIntervalMs > 0)
@@ -1209,6 +1089,8 @@ NTSTATUS CMiniportWaveRTStream::SetState
 
         case KSSTATE_RUN:
             // Start DMA
+            DbgPrint("Start DMA\n");
+
             LARGE_INTEGER ullPerfCounterTemp;
             ullPerfCounterTemp = KeQueryPerformanceCounter(&m_ullPerformanceCounterFrequency);
             m_ullLastDPCTimeStamp = m_ullDmaTimeStamp = KSCONVERT_PERFORMANCE_TIME(m_ullPerformanceCounterFrequency.QuadPart, ullPerfCounterTemp);
@@ -1293,8 +1175,6 @@ VOID CMiniportWaveRTStream::UpdatePosition
 
     if (m_bCapture)
     {
-        // Write sine wave to buffer.
-        WriteBytes(ByteDisplacement);
     }
     else
     {
@@ -1324,12 +1204,6 @@ VOID CMiniportWaveRTStream::UpdatePosition
         {
             m_bLastBufferRendered = TRUE;
         }
-
-        if (!g_DoNotCreateDataFiles)
-        {
-            // Read from buffer and write to a file.
-            ReadBytes(ByteDisplacement);
-        }
     }
     
     // Increment the DMA position by the number of bytes displaced since the last
@@ -1346,71 +1220,6 @@ VOID CMiniportWaveRTStream::UpdatePosition
     // Update the DMA time stamp for the next call to GetPosition()
     //
     m_ullDmaTimeStamp = hnsCurrentTime;
-}
-
-//=============================================================================
-#pragma code_seg()
-VOID CMiniportWaveRTStream::WriteBytes
-(
-    _In_ ULONG ByteDisplacement
-)
-/*++
-
-Routine Description:
-
-This function writes the audio buffer using a sine wave generator
-
-Arguments:
-
-ByteDisplacement - # of bytes to process.
-
---*/
-{
-    ULONG bufferOffset = m_ullLinearPosition % m_ulDmaBufferSize;
-
-    // Normally this will loop no more than once for a single wrap, but if
-    // many bytes have been displaced then this may loops many times.
-    while (ByteDisplacement > 0)
-    {
-        ULONG runWrite = min(ByteDisplacement, m_ulDmaBufferSize - bufferOffset);
-        
-        RtlZeroMemory(m_pDmaBuffer + bufferOffset, runWrite);
-        //.GenerateSine(m_pDmaBuffer + bufferOffset, runWrite);
-           	
-        bufferOffset = (bufferOffset + runWrite) % m_ulDmaBufferSize;
-        ByteDisplacement -= runWrite;
-    }
-}
-
-//=============================================================================
-#pragma code_seg()
-VOID CMiniportWaveRTStream::ReadBytes
-(
-    _In_ ULONG ByteDisplacement
-)
-/*++
-
-Routine Description:
-
-This function reads the audio buffer and saves the data in a file.
-
-Arguments:
-
-ByteDisplacement - # of bytes to process.
-
---*/
-{
-    ULONG bufferOffset = m_ullLinearPosition % m_ulDmaBufferSize;
-
-    // Normally this will loop no more than once for a single wrap, but if
-    // many bytes have been displaced then this may loops many times.
-    while (ByteDisplacement > 0)
-    {
-        ULONG runWrite = min(ByteDisplacement, m_ulDmaBufferSize - bufferOffset);
-        m_SaveData.WriteData(m_pDmaBuffer + bufferOffset, runWrite);
-        bufferOffset = (bufferOffset + runWrite) % m_ulDmaBufferSize;
-        ByteDisplacement -= runWrite;
-    }
 }
 
 //=============================================================================
@@ -1440,6 +1249,7 @@ Return Value:
 --*/
 {
     PAGED_CODE();
+    UNREFERENCED_PARAMETER(drmRights);
 
     DPF_ENTER(("[CMiniportWaveRT::SetContentId]"));
 
@@ -1460,12 +1270,6 @@ Return Value:
     {
         m_ulContentId = ulOldContentId;
     }
-
-    //
-    // Simple Audio Sample writes each stream seperately to disk. If the rights for this
-    // stream indicates that the stream is CopyProtected, stop writing to disk.
-    //
-    m_SaveData.Disable(drmRights->CopyProtect);
 
     //
     // From MSDN:

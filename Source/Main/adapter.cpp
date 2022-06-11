@@ -44,12 +44,6 @@ StartDevice
 _Dispatch_type_(IRP_MJ_PNP)
 DRIVER_DISPATCH PnpHandler;
 
-//
-// Rendering streams are saved to a file by default. Use the registry value 
-// DoNotCreateDataFiles (DWORD) > 0 to override this default.
-//
-DWORD g_DoNotCreateDataFiles = 0;  // default is off.
-DWORD g_DisableToneGenerator = 0;  // default is to generate tones.
 UNICODE_STRING g_RegistryPath;      // This is used to store the registry settings path for the driver
 
 //-----------------------------------------------------------------------------
@@ -121,133 +115,6 @@ Done:
     return;
 }
 
-//=============================================================================
-#pragma code_seg("INIT")
-__drv_requiresIRQL(PASSIVE_LEVEL)
-NTSTATUS
-CopyRegistrySettingsPath(
-    _In_ PUNICODE_STRING RegistryPath
-)
-/*++
-
-Routine Description:
-
-Copies the following registry path to a global variable.
-
-\REGISTRY\MACHINE\SYSTEM\ControlSetxxx\Services\<driver>\Parameters
-
-Arguments:
-
-RegistryPath - Registry path passed to DriverEntry
-
-Returns:
-
-NTSTATUS - SUCCESS if able to configure the framework
-
---*/
-
-{
-    // Initializing the unicode string, so that if it is not allocated it will not be deallocated too.
-    RtlInitUnicodeString(&g_RegistryPath, NULL);
-
-    g_RegistryPath.MaximumLength = RegistryPath->Length + sizeof(WCHAR);
-
-    g_RegistryPath.Buffer = (PWCH)ExAllocatePool2(POOL_FLAG_PAGED, g_RegistryPath.MaximumLength, MINADAPTER_POOLTAG);
-
-    if (g_RegistryPath.Buffer == NULL)
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-
-    RtlAppendUnicodeToString(&g_RegistryPath, RegistryPath->Buffer);
-
-    return STATUS_SUCCESS;
-}
-
-//=============================================================================
-#pragma code_seg("INIT")
-__drv_requiresIRQL(PASSIVE_LEVEL)
-NTSTATUS
-GetRegistrySettings(
-    _In_ PUNICODE_STRING RegistryPath
-   )
-/*++
-
-Routine Description:
-
-    Initialize Driver Framework settings from the driver
-    specific registry settings under
-
-    \REGISTRY\MACHINE\SYSTEM\ControlSetxxx\Services\<driver>\Parameters
-
-Arguments:
-
-    RegistryPath - Registry path passed to DriverEntry
-
-Returns:
-
-    NTSTATUS - SUCCESS if able to configure the framework
-
---*/
-
-{
-    NTSTATUS                    ntStatus;
-    UNICODE_STRING              parametersPath;
-    RTL_QUERY_REGISTRY_TABLE    paramTable[] = {
-    // QueryRoutine     Flags                                               Name                     EntryContext             DefaultType                                                    DefaultData              DefaultLength
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"DoNotCreateDataFiles", &g_DoNotCreateDataFiles, (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD, &g_DoNotCreateDataFiles, sizeof(ULONG)},
-        { NULL,   RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_TYPECHECK, L"DisableToneGenerator", &g_DisableToneGenerator, (REG_DWORD << RTL_QUERY_REGISTRY_TYPECHECK_SHIFT) | REG_DWORD, &g_DisableToneGenerator, sizeof(ULONG)},
-        { NULL,   0,                                                        NULL,                    NULL,                    0,                                                             NULL,                    0}
-    };
-
-    DPF(D_TERSE, ("[GetRegistrySettings]"));
-
-    PAGED_CODE(); 
-
-    RtlInitUnicodeString(&parametersPath, NULL);
-
-    parametersPath.MaximumLength =
-        RegistryPath->Length + sizeof(L"\\Parameters") + sizeof(WCHAR);
-
-    parametersPath.Buffer = (PWCH) ExAllocatePool2(POOL_FLAG_PAGED, parametersPath.MaximumLength, MINADAPTER_POOLTAG);
-    if (parametersPath.Buffer == NULL) 
-    {
-        return STATUS_INSUFFICIENT_RESOURCES;
-    }
-
-    RtlAppendUnicodeToString(&parametersPath, RegistryPath->Buffer);
-    RtlAppendUnicodeToString(&parametersPath, L"\\Parameters");
-
-    ntStatus = RtlQueryRegistryValues(
-                 RTL_REGISTRY_ABSOLUTE | RTL_REGISTRY_OPTIONAL,
-                 parametersPath.Buffer,
-                 &paramTable[0],
-                 NULL,
-                 NULL
-                );
-
-    if (!NT_SUCCESS(ntStatus)) 
-    {
-        DPF(D_VERBOSE, ("RtlQueryRegistryValues failed, using default values, 0x%x", ntStatus));
-        //
-        // Don't return error because we will operate with default values.
-        //
-    }
-
-    //
-    // Dump settings.
-    //
-    DPF(D_VERBOSE, ("DoNotCreateDataFiles: %u", g_DoNotCreateDataFiles));
-    DPF(D_VERBOSE, ("DisableToneGenerator: %u", g_DisableToneGenerator));
-
-    //
-    // Cleanup.
-    //
-    ExFreePool(parametersPath.Buffer);
-
-    return STATUS_SUCCESS;
-}
-
 #pragma code_seg("INIT")
 extern "C" DRIVER_INITIALIZE DriverEntry;
 extern "C" NTSTATUS
@@ -283,24 +150,6 @@ Return Value:
     WDF_DRIVER_CONFIG           config;
 
     DPF(D_TERSE, ("[DriverEntry]"));
-
-    // Copy registry Path name in a global variable to be used by modules inside driver.
-    // !! NOTE !! Inside this function we are initializing the registrypath, so we MUST NOT add any failing calls
-    // before the following call.
-    ntStatus = CopyRegistrySettingsPath(RegistryPathName);
-    IF_FAILED_ACTION_JUMP(
-        ntStatus,
-        DPF(D_ERROR, ("Registry path copy error 0x%x", ntStatus)),
-        Done);
-
-    //
-    // Get registry configuration.
-    //
-    ntStatus = GetRegistrySettings(RegistryPathName);
-    IF_FAILED_ACTION_JUMP(
-        ntStatus,
-        DPF(D_ERROR, ("Registry Configuration error 0x%x", ntStatus)),
-        Done);
     
     WDF_DRIVER_CONFIG_INIT(&config, WDF_NO_EVENT_CALLBACK);
     //

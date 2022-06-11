@@ -14,9 +14,6 @@ Abstract:
 #ifndef _CSAUDIOACP3X_MINWAVERTSTREAM_H_
 #define _CSAUDIOACP3X_MINWAVERTSTREAM_H_
 
-#include "savedata.h"
-#include "ToneGenerator.h"
-
 //
 // Structure to store notifications events in a protected list
 //
@@ -108,81 +105,17 @@ protected:
     BOOL                        m_bLfxEnabled;
     PWAVEFORMATEXTENSIBLE       m_pWfExt;
     ULONG                       m_ulContentId;
-    CSaveData                   m_SaveData;
-    ToneGenerator               m_ToneGenerator;
     GUID                        m_SignalProcessingMode;
     BOOLEAN                     m_bEoSReceived;
     BOOLEAN                     m_bLastBufferRendered;
     KSPIN_LOCK                  m_PositionSpinLock;
-    // Member variable as config params for tone generator
-    ULONG                       m_ulHostCaptureToneFrequency;
-    // If abs(m_dwHostCaptureToneAmplitude) + abs(m_dwHostCaptureToneDCValue) > 100
-    // m_dwHostCaptureToneDCValue will be compensated to make the sum equal to 100
-    DWORD                       m_dwHostCaptureToneAmplitude;   // must be between -100 to 100
-    DWORD                       m_dwLoopbackCaptureToneAmplitude; // must be between -100 to 100
-    DWORD                       m_dwHostCaptureToneDCOffset;   // must be between -100 to 100
-    DWORD                       m_dwLoopbackCaptureToneDCOffset; // must be between -100 to 100
-    DWORD                       m_dwHostCaptureToneInitialPhase;   // must be between -31416 to 31416
-    DWORD                       m_dwLoopbackCaptureToneInitialPhase; // must be between -31416 to 31416
-    // Member variable as config params for tone generator
 
 public:
-
-    NTSTATUS GetVolumeChannelCount
-    (
-        _Out_ UINT32* puiChannelCount
-    );
-
-    NTSTATUS GetVolumeSteppings
-    (
-        _Out_writes_bytes_(_ui32DataSize) PKSPROPERTY_STEPPING_LONG _pKsPropStepLong,
-        _In_  UINT32 _ui32DataSize
-    );
-
-    NTSTATUS GetChannelVolume
-    (
-        _In_  UINT32 _uiChannel,
-        _Out_  LONG* _pVolume
-    );
-
-    NTSTATUS SetChannelVolume
-    (
-        _In_  UINT32 _uiChannel,
-        _In_  LONG _Volume
-    );
-
-    NTSTATUS GetMuteChannelCount
-    (
-        _Out_ UINT32* puiChannelCount
-    );
-
-    NTSTATUS GetMuteSteppings
-    (
-        _Out_writes_bytes_(_ui32DataSize)  PKSPROPERTY_STEPPING_LONG _pKsPropStepLong,
-        _In_  UINT32 _ui32DataSize
-    );
-
-    NTSTATUS GetChannelMute
-    (
-        _In_  UINT32 _uiChannel,
-        _Out_  BOOL* _pbMute
-    );
-
-    NTSTATUS SetChannelMute
-    (
-        _In_  UINT32 _uiChannel,
-        _In_  BOOL _bMute
-    );
 
     //presentation
     NTSTATUS GetPresentationPosition
     (
         _Out_  KSAUDIO_PRESENTATION_POSITION *_pPresentationPosition
-    );
-
-    NTSTATUS SetCurrentWritePosition
-    (
-        _In_  ULONG ulCurrentWritePosition
     );
 
         
@@ -209,16 +142,6 @@ private:
     //
     
 #pragma code_seg()
-
-    VOID WriteBytes
-    (
-        _In_ ULONG ByteDisplacement
-    );
-        
-    VOID ReadBytes
-    (
-        _In_ ULONG ByteDisplacement
-    );
     
     VOID UpdatePosition
     (
@@ -236,8 +159,6 @@ private:
         _Out_opt_  ULONGLONG *      _pullPresentationPosition, 
         _Out_opt_  LARGE_INTEGER *  _pliQPCTime
     );
-
-    NTSTATUS ReadRegistrySettings();
     
 };
 typedef CMiniportWaveRTStream *PCMiniportWaveRTStream;
