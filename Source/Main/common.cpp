@@ -100,19 +100,6 @@ class CAdapterCommon :
             _In_  UINT            uiDevSpecific
         );
 
-        STDMETHODIMP_(BOOL)     MixerMuteRead
-        (
-            _In_  ULONG           Index,
-            _In_  ULONG           Channel
-        );
-
-        STDMETHODIMP_(void)     MixerMuteWrite
-        (
-            _In_  ULONG           Index,
-            _In_  ULONG           Channel,
-            _In_  BOOL            Value
-        );
-
         STDMETHODIMP_(ULONG)    MixerMuxRead(void);
 
         STDMETHODIMP_(void)     MixerMuxWrite
@@ -121,19 +108,6 @@ class CAdapterCommon :
         );
 
         STDMETHODIMP_(void)     MixerReset(void);
-
-        STDMETHODIMP_(LONG)     MixerVolumeRead
-        ( 
-            _In_  ULONG           Index,
-            _In_  ULONG           Channel
-        );
-
-        STDMETHODIMP_(void)     MixerVolumeWrite
-        ( 
-            _In_  ULONG           Index,
-            _In_  ULONG           Channel,
-            _In_  LONG            Value 
-        );
 
         STDMETHODIMP_(LONG)     MixerPeakMeterRead
         ( 
@@ -1012,71 +986,6 @@ Return Value:
 
 //=============================================================================
 #pragma code_seg()
-STDMETHODIMP_(BOOL)
-CAdapterCommon::MixerMuteRead
-(
-    _In_  ULONG               Index,
-    _In_  ULONG               Channel
-)
-/*++
-
-Routine Description:
-
-  Store the new value in mixer register array.
-
-Arguments:
-
-  Index - node id
-
-Return Value:
-
-    BOOL - mixer mute setting for this node
-
---*/
-{
-    if (m_pHW)
-    {
-        return m_pHW->GetMixerMute(Index, Channel);
-    }
-
-    return 0;
-} // MixerMuteRead
-
-//=============================================================================
-#pragma code_seg()
-STDMETHODIMP_(void)
-CAdapterCommon::MixerMuteWrite
-(
-    _In_  ULONG                   Index,
-    _In_  ULONG                   Channel,
-    _In_  BOOL                    Value
-)
-/*++
-
-Routine Description:
-
-  Store the new value in mixer register array.
-
-Arguments:
-
-  Index - node id
-
-  Value - new mute settings
-
-Return Value:
-
-  NT status code.
-
---*/
-{
-    if (m_pHW)
-    {
-        m_pHW->SetMixerMute(Index, Channel, Value);
-    }
-} // MixerMuteWrite
-
-//=============================================================================
-#pragma code_seg()
 STDMETHODIMP_(ULONG)
 CAdapterCommon::MixerMuxRead() 
 /*++
@@ -1139,75 +1048,6 @@ Return Value:
 //=============================================================================
 #pragma code_seg()
 STDMETHODIMP_(LONG)
-CAdapterCommon::MixerVolumeRead
-( 
-    _In_  ULONG                   Index,
-    _In_  ULONG                   Channel
-)
-/*++
-
-Routine Description:
-
-  Return the value in mixer register array.
-
-Arguments:
-
-  Index - node id
-
-  Channel = which channel
-
-Return Value:
-
-    Byte - mixer volume settings for this line
-
---*/
-{
-    if (m_pHW)
-    {
-        return m_pHW->GetMixerVolume(Index, Channel);
-    }
-
-    return 0;
-} // MixerVolumeRead
-
-//=============================================================================
-#pragma code_seg()
-STDMETHODIMP_(void)
-CAdapterCommon::MixerVolumeWrite
-( 
-    _In_  ULONG                   Index,
-    _In_  ULONG                   Channel,
-    _In_  LONG                    Value
-)
-/*++
-
-Routine Description:
-
-  Store the new value in mixer register array.
-
-Arguments:
-
-  Index - node id
-
-  Channel - which channel
-
-  Value - new volume level
-
-Return Value:
-
-    void
-
---*/
-{
-    if (m_pHW)
-    {
-        m_pHW->SetMixerVolume(Index, Channel, Value);
-    }
-} // MixerVolumeWrite
-
-//=============================================================================
-#pragma code_seg()
-STDMETHODIMP_(LONG)
 CAdapterCommon::MixerPeakMeterRead
 ( 
     _In_  ULONG                   Index,
@@ -1237,7 +1077,7 @@ Return Value:
     }
 
     return 0;
-} // MixerVolumeRead
+} // MixerPeakMeterRead
 
 //=============================================================================
 #pragma code_seg()

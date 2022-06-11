@@ -188,42 +188,6 @@ Return Value:
     m_uiDevSpecific = uiDevSpecific;
 } // uiSetDevSpecific
 
-
-//=============================================================================
-BOOL
-CSimpleAudioSampleHW::GetMixerMute
-(
-    _In_  ULONG                   ulNode,
-    _In_  ULONG                   ulChannel
-)
-/*++
-
-Routine Description:
-
-  Gets the HW (!) mute levels for Simple Audio Sample
-
-Arguments:
-
-  ulNode - topology node id
-  
-  ulChannel - which channel are we reading?
-
-Return Value:
-
-  mute setting
-
---*/
-{
-    UNREFERENCED_PARAMETER(ulChannel);
-    
-    if (ulNode < MAX_TOPOLOGY_NODES)
-    {
-        return m_MuteControls[ulNode];
-    }
-
-    return 0;
-} // GetMixerMute
-
 //=============================================================================
 ULONG                       
 CSimpleAudioSampleHW::GetMixerMux()
@@ -243,41 +207,6 @@ Return Value:
 {
     return m_ulMux;
 } // GetMixerMux
-
-//=============================================================================
-LONG
-CSimpleAudioSampleHW::GetMixerVolume
-(   
-    _In_  ULONG                   ulNode,
-    _In_  ULONG                   ulChannel
-)
-/*++
-
-Routine Description:
-
-  Gets the HW (!) volume for Simple Audio Sample.
-
-Arguments:
-
-  ulNode - topology node id
-
-  ulChannel - which channel are we reading?
-
-Return Value:
-
-  LONG - volume level
-
---*/
-{
-    UNREFERENCED_PARAMETER(ulChannel);
-
-    if (ulNode < MAX_TOPOLOGY_NODES)
-    {
-        return m_VolumeControls[ulNode];
-    }
-
-    return 0;
-} // GetMixerVolume
 
 //=============================================================================
 LONG
@@ -333,10 +262,6 @@ Return Value:
 --*/
 {
     PAGED_CODE();
-    
-    RtlFillMemory(m_VolumeControls, sizeof(LONG) * MAX_TOPOLOGY_NODES, 0xFF);
-    // Endpoints are not muted by default.
-    RtlZeroMemory(m_MuteControls, sizeof(BOOL) * MAX_TOPOLOGY_NODES);
 
     for (ULONG i=0; i<MAX_TOPOLOGY_NODES; ++i)
     {
@@ -347,42 +272,6 @@ Return Value:
     m_ulMux = 2;
 } // MixerReset
 #pragma code_seg()
-
-//=============================================================================
-void
-CSimpleAudioSampleHW::SetMixerMute
-(
-    _In_  ULONG                   ulNode,
-    _In_  ULONG                   ulChannel,
-    _In_  BOOL                    fMute
-)
-/*++
-
-Routine Description:
-
-  Sets the HW (!) mute levels for Simple Audio Sample
-
-Arguments:
-
-  ulNode - topology node id
-
-  ulChannel - which channel are we setting?
-  
-  fMute - mute flag
-
-Return Value:
-
-    void
-
---*/
-{
-    UNREFERENCED_PARAMETER(ulChannel);
-
-    if (ulNode < MAX_TOPOLOGY_NODES)
-    {
-        m_MuteControls[ulNode] = fMute;
-    }
-} // SetMixerMute
 
 //=============================================================================
 void                        
@@ -408,39 +297,3 @@ Return Value:
 {
     m_ulMux = ulNode;
 } // SetMixMux
-
-//=============================================================================
-void  
-CSimpleAudioSampleHW::SetMixerVolume
-(   
-    _In_  ULONG                   ulNode,
-    _In_  ULONG                   ulChannel,
-    _In_  LONG                    lVolume
-)
-/*++
-
-Routine Description:
-
-  Sets the HW (!) volume for Simple Audio Sample.
-
-Arguments:
-
-  ulNode - topology node id
-
-  ulChannel - which channel are we setting?
-
-  lVolume - volume level
-
-Return Value:
-
-    void
-
---*/
-{
-    UNREFERENCED_PARAMETER(ulChannel);
-
-    if (ulNode < MAX_TOPOLOGY_NODES)
-    {
-        m_VolumeControls[ulNode] = lVolume;
-    }
-} // SetMixerVolume

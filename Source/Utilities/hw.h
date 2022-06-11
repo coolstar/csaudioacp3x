@@ -34,8 +34,6 @@ class CSimpleAudioSampleHW
 {
 public:
 protected:
-    BOOL                        m_MuteControls[MAX_TOPOLOGY_NODES];
-    LONG                        m_VolumeControls[MAX_TOPOLOGY_NODES];
     LONG                        m_PeakMeterControls[MAX_TOPOLOGY_NODES];
     ULONG                       m_ulMux;            // Mux selection
     BOOL                        m_bDevSpecific;
@@ -63,32 +61,10 @@ public:
     (
         _In_  UINT                uiDevSpecific
     );
-    BOOL                        GetMixerMute
-    (
-        _In_  ULONG               ulNode,
-        _In_  ULONG               ulChannel
-    );
-    void                        SetMixerMute
-    (
-        _In_  ULONG               ulNode,
-        _In_  ULONG               ulChannel,
-        _In_  BOOL                fMute
-    );
     ULONG                       GetMixerMux();
     void                        SetMixerMux
     (
         _In_  ULONG               ulNode
-    );
-    LONG                        GetMixerVolume
-    (   
-        _In_  ULONG               ulNode,
-        _In_  ULONG               ulChannel
-    );
-    void                        SetMixerVolume
-    (   
-        _In_  ULONG               ulNode,
-        _In_  ULONG               ulChannel,
-        _In_  LONG                lVolume
     );
     
     LONG                        GetMixerPeakMeter

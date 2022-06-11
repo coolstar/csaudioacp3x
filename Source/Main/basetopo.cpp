@@ -274,20 +274,6 @@ Return Value:
 
     switch (PropertyRequest->PropertyItem->Id)
     {
-        case KSPROPERTY_AUDIO_VOLUMELEVEL:
-            ntStatus = PropertyHandler_Volume(
-                                m_AdapterCommon,
-                                PropertyRequest,
-                                m_DeviceMaxChannels);
-            break;
-        
-        case KSPROPERTY_AUDIO_MUTE:
-            ntStatus = PropertyHandler_Mute(
-                                m_AdapterCommon,
-                                PropertyRequest,
-                                m_DeviceMaxChannels);
-            break;
-
         case KSPROPERTY_AUDIO_PEAKMETER2:
             ntStatus = PropertyHandler_PeakMeter2(
                                 m_AdapterCommon,

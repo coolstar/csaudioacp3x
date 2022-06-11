@@ -66,22 +66,6 @@ PropertyHandler_CpuResources
 );
 
 NTSTATUS
-PropertyHandler_Volume
-(
-    _In_  PADAPTERCOMMON        AdapterCommon,
-    _In_  PPCPROPERTY_REQUEST   PropertyRequest,
-    _In_  ULONG                 MaxChannels
-);
-
-NTSTATUS                            
-PropertyHandler_Mute
-(
-    _In_  PADAPTERCOMMON        AdapterCommon,
-    _In_  PPCPROPERTY_REQUEST   PropertyRequest,
-    _In_  ULONG                 MaxChannels
-);
-
-NTSTATUS
 PropertyHandler_PeakMeter2
 (
     _In_  PADAPTERCOMMON        AdapterCommon,

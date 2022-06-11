@@ -103,64 +103,10 @@ PKSJACK_DESCRIPTION SpeakerJackDescriptions[] =
     &SpeakerJackDescBridge
 };
 
-//=============================================================================
-static
-PCPROPERTY_ITEM SpeakerPropertiesVolume[] =
-{
-    {
-    &KSPROPSETID_Audio,
-    KSPROPERTY_AUDIO_VOLUMELEVEL,
-    KSPROPERTY_TYPE_GET | KSPROPERTY_TYPE_SET | KSPROPERTY_TYPE_BASICSUPPORT,
-    PropertyHandler_SpeakerTopology
-    }
-};
-
-DEFINE_PCAUTOMATION_TABLE_PROP(AutomationSpeakerVolume, SpeakerPropertiesVolume);
-
-//=============================================================================
-static
-PCPROPERTY_ITEM SpeakerPropertiesMute[] =
-{
-  {
-    &KSPROPSETID_Audio,
-    KSPROPERTY_AUDIO_MUTE,
-    KSPROPERTY_TYPE_GET | KSPROPERTY_TYPE_SET | KSPROPERTY_TYPE_BASICSUPPORT,
-    PropertyHandler_SpeakerTopology
-  }
-};
-
-DEFINE_PCAUTOMATION_TABLE_PROP(AutomationSpeakerMute, SpeakerPropertiesMute);
-
-//=============================================================================
-static
-PCNODE_DESCRIPTOR SpeakerTopologyNodes[] =
-{
-    // KSNODE_TOPO_VOLUME
-    {
-      0,                              // Flags
-      &AutomationSpeakerVolume,     // AutomationTable
-      &KSNODETYPE_VOLUME,             // Type
-      &KSAUDFNAME_MASTER_VOLUME         // Name
-    },
-    // KSNODE_TOPO_MUTE
-    {
-      0,                              // Flags
-      &AutomationSpeakerMute,       // AutomationTable
-      &KSNODETYPE_MUTE,               // Type
-      &KSAUDFNAME_MASTER_MUTE            // Name
-    }
-};
-
-C_ASSERT(KSNODE_TOPO_VOLUME == 0);
-C_ASSERT(KSNODE_TOPO_MUTE == 1);
-
 static
 PCCONNECTION_DESCRIPTOR SpeakerTopoMiniportConnections[] =
 {
-    //  FromNode,                 FromPin,                    ToNode,                 ToPin
-    {   PCFILTER_NODE,            KSPIN_TOPO_WAVEOUT_SOURCE,    KSNODE_TOPO_VOLUME,     1 },
-    {   KSNODE_TOPO_VOLUME,       0,                          KSNODE_TOPO_MUTE,       1 },
-    {   KSNODE_TOPO_MUTE,         0,                          PCFILTER_NODE,          KSPIN_TOPO_LINEOUT_DEST }
+    {PCFILTER_NODE,            KSPIN_TOPO_WAVEOUT_SOURCE,    PCFILTER_NODE,     KSPIN_TOPO_LINEOUT_DEST} //no volume controls
 };
 
 //=============================================================================
@@ -195,8 +141,8 @@ PCFILTER_DESCRIPTOR SpeakerTopoMiniportFilterDescriptor =
   SIZEOF_ARRAY(SpeakerTopoMiniportPins),        // PinCount
   SpeakerTopoMiniportPins,                      // Pins
   sizeof(PCNODE_DESCRIPTOR),                    // NodeSize
-  SIZEOF_ARRAY(SpeakerTopologyNodes),           // NodeCount
-  SpeakerTopologyNodes,                         // Nodes
+  0,           // NodeCount
+  NULL,                         // Nodes
   SIZEOF_ARRAY(SpeakerTopoMiniportConnections), // ConnectionCount
   SpeakerTopoMiniportConnections,               // Connections
   0,                                            // CategoryCount

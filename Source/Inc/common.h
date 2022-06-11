@@ -307,21 +307,6 @@ DECLARE_INTERFACE_(IAdapterCommon, IUnknown)
         _In_  UINT                uiDevSpecific
     );
 
-    STDMETHOD_(BOOL,            MixerMuteRead)
-    (
-        THIS_
-        _In_  ULONG               Index,
-        _In_  ULONG               Channel
-    ) PURE;
-
-    STDMETHOD_(VOID,            MixerMuteWrite)
-    (
-        THIS_
-        _In_  ULONG               Index,
-        _In_  ULONG               Channel,
-        _In_  BOOL                Value
-    );
-
     STDMETHOD_(ULONG,           MixerMuxRead)
     (
         THIS
@@ -332,21 +317,6 @@ DECLARE_INTERFACE_(IAdapterCommon, IUnknown)
         THIS_
         _In_  ULONG               Index
     );
-
-    STDMETHOD_(LONG,            MixerVolumeRead) 
-    ( 
-        THIS_
-        _In_  ULONG               Index,
-        _In_  ULONG               Channel
-    ) PURE;
-
-    STDMETHOD_(VOID,            MixerVolumeWrite) 
-    ( 
-        THIS_
-        _In_  ULONG               Index,
-        _In_  ULONG               Channel,
-        _In_  LONG                Value 
-    ) PURE;
     
     STDMETHOD_(LONG,            MixerPeakMeterRead) 
     ( 
