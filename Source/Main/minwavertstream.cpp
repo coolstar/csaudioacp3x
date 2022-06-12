@@ -4,6 +4,7 @@
 #include "endpoints.h"
 #include "minwavert.h"
 #include "minwavertstream.h"
+#include "acp3x.h"
 #define MINWAVERTSTREAM_POOLTAG 'SRWM'
 
 #pragma warning (disable : 4127)
@@ -359,16 +360,18 @@ NTSTATUS CMiniportWaveRTStream::AllocateBufferWithNotification
     //
     //  A WaveRT miniport driver should not require software access to the audio buffer itself."
     //   
-    m_pDmaBuffer = (BYTE*)m_pPortStream->MapAllocatedPages(pBufferMdl, MmCached);
+    m_pDmaBuffer = (BYTE*)m_pPortStream->MapAllocatedPages(pBufferMdl, MmNonCached);
     m_ulNotificationsPerBuffer = NotificationCount_;
     m_ulDmaBufferSize = RequestedSize_;
     ulBufferDurationMs = (RequestedSize_ * 1000) / m_ulDmaMovementRate;
     m_ulNotificationIntervalMs = ulBufferDurationMs / NotificationCount_;
 
+    m_pMDL = pBufferMdl;
+
     *AudioBufferMdl_ = pBufferMdl;
     *ActualSize_ = RequestedSize_;
     *OffsetFromFirstPage_ = 0;
-    *CacheType_ = MmCached;
+    *CacheType_ = MmNonCached;
 
     return STATUS_SUCCESS;
 }
@@ -572,6 +575,7 @@ _Out_   MEMORY_CACHING_TYPE    *CacheType_
     }
 
     DbgPrint("AllocateAudioBuffer; Requested Size: %lx. Block Align: %lx\n", RequestedSize_, m_pWfExt->Format.nBlockAlign);
+
     RequestedSize_ -= RequestedSize_ % (m_pWfExt->Format.nBlockAlign);
 
     PHYSICAL_ADDRESS highAddress;
@@ -600,7 +604,8 @@ _Out_   MEMORY_CACHING_TYPE    *CacheType_
     //
     //  A WaveRT miniport driver should not require software access to the audio buffer itself."
     //   
-    m_pDmaBuffer = (BYTE*)m_pPortStream->MapAllocatedPages(pBufferMdl, MmCached);
+    m_pDmaBuffer = (BYTE*)m_pPortStream->MapAllocatedPages(pBufferMdl, MmNonCached);
+    m_pMDL = pBufferMdl;
 
     m_ulDmaBufferSize = RequestedSize_;
     m_ulNotificationsPerBuffer = 0;
@@ -608,7 +613,7 @@ _Out_   MEMORY_CACHING_TYPE    *CacheType_
     *AudioBufferMdl_ = pBufferMdl;
     *ActualSize_ = RequestedSize_;
     *OffsetFromFirstPage_ = 0;
-    *CacheType_ = MmCached;
+    *CacheType_ = MmNonCached;
 
     return STATUS_SUCCESS;
 }
@@ -1040,11 +1045,22 @@ NTSTATUS CMiniportWaveRTStream::SetState
 
             DbgPrint("Stop DMA (device %d)\n", m_pMiniport->m_DeviceType);
 
+            m_pMiniport->StopDMA();
+            if (!NT_SUCCESS(ntStatus)) {
+                return ntStatus;
+            }
+
             KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
             break;
 
         case KSSTATE_ACQUIRE:
             DbgPrint("Acquire DMA (device %d)\n", m_pMiniport->m_DeviceType);
+
+            ntStatus = m_pMiniport->AcquireDMA(this);
+            if (!NT_SUCCESS(ntStatus)) {
+                return ntStatus;
+            }
+
             if (m_KsState == KSSTATE_STOP)
             {
                 DbgPrint("Acquire DMA [stopped (device %d)\n", m_pMiniport->m_DeviceType);
@@ -1109,6 +1125,11 @@ NTSTATUS CMiniportWaveRTStream::SetState
                     NULL
                  );
 
+            }
+
+            m_pMiniport->StartDMA(m_ulDmaBufferSize);
+            if (!NT_SUCCESS(ntStatus)) {
+                return ntStatus;
             }
 
             break;

@@ -19,6 +19,7 @@ Abstract:
 #include "minwavert.h"
 #include "minwavertstream.h"
 #include "micarraywavtable.h"
+#include "common_class.h"
 
 #define EFFECTS_LIST_COUNT 2
 
@@ -869,15 +870,19 @@ CMiniportWaveRT::StreamCreated
 
     DbgPrint("Stream created %d\n", m_DeviceType);
 
+    NTSTATUS status = m_pAdapterCommon->m_pHW->acp3x_hw_params(m_DeviceType);
+    if (!NT_SUCCESS(status)) {
+        return status;
+    }
+
+    ALLOCATE_PIN_INSTANCE_RESOURCES(m_ulSystemAllocated);
+
     if (IsSystemCapturePin(_Pin))
     {
-        ALLOCATE_PIN_INSTANCE_RESOURCES(m_ulSystemAllocated);
         return STATUS_SUCCESS;
     }
     else if (IsSystemRenderPin(_Pin))
     {
-
-        ALLOCATE_PIN_INSTANCE_RESOURCES(m_ulSystemAllocated);
         streams = m_SystemStreams;
         count = m_ulMaxSystemStreams;
 
@@ -1668,5 +1673,20 @@ exit:
     return ntStatus;
 }
 
-#pragma code_seg()
+#pragma code_seg("PAGE")
+NTSTATUS
+CMiniportWaveRT::AcquireDMA(_In_ PCMiniportWaveRTStream _Stream) {
+    return m_pAdapterCommon->m_pHW->acp3x_program_dma(m_DeviceType, _Stream->m_pMDL, _Stream->m_pPortStream);
+}
 
+NTSTATUS
+CMiniportWaveRT::StartDMA(UINT32 byteCount) {
+    return m_pAdapterCommon->m_pHW->acp3x_play(m_DeviceType, byteCount);
+}
+
+NTSTATUS
+CMiniportWaveRT::StopDMA() {
+    return m_pAdapterCommon->m_pHW->acp3x_stop(m_DeviceType);
+}
+
+#pragma code_seg()

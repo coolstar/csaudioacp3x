@@ -45,7 +45,6 @@ class CMiniportWaveRTStream :
     public CUnknown
 {
 protected:
-    PPORTWAVERTSTREAM           m_pPortStream;
     LIST_ENTRY                  m_NotificationList;
     PEX_TIMER                   m_pNotificationTimer;
     ULONG                       m_ulNotificationIntervalMs;
@@ -53,6 +52,9 @@ protected:
     LONG                        m_IsCurrentWritePositionUpdated;
     
 public:
+    PPORTWAVERTSTREAM           m_pPortStream;
+    PMDL m_pMDL;
+
     DECLARE_STD_UNKNOWN();
     DEFINE_STD_CONSTRUCTOR(CMiniportWaveRTStream);
     ~CMiniportWaveRTStream();

@@ -18,6 +18,7 @@ Abstract:
 // Referenced Forward
 //=============================================================================
 class CMiniportWaveRTStream;
+class CAdapterCommon;
 typedef CMiniportWaveRTStream *PCMiniportWaveRTStream;
 
 //=============================================================================
@@ -58,7 +59,7 @@ private:
     };
 
 protected:
-    PADAPTERCOMMON                      m_pAdapterCommon;
+    CAdapterCommon                      *m_pAdapterCommon;
     ULONG                               m_DeviceFlags;
     eDeviceType                         m_DeviceType;
     PPORTEVENTS                         m_pPortEvents;
@@ -87,6 +88,16 @@ public:
         _In_ ULONG                  _Pin,
         _In_ PCMiniportWaveRTStream _Stream
     );
+
+    NTSTATUS AcquireDMA(
+        _In_ PCMiniportWaveRTStream _Stream
+    );
+
+    NTSTATUS StartDMA(
+        UINT32 byteCount
+    );
+
+    NTSTATUS StopDMA();
     
     NTSTATUS IsFormatSupported
     ( 
@@ -129,7 +140,7 @@ public:
     {
         PAGED_CODE();
 
-        m_pAdapterCommon = (PADAPTERCOMMON)UnknownAdapter; // weak ref.
+        m_pAdapterCommon = (CAdapterCommon *)UnknownAdapter; // weak ref.
 
         if (MiniportPair->WaveDescriptor)
         {
@@ -197,7 +208,7 @@ public:
 
     PADAPTERCOMMON GetAdapterCommObj() 
     {
-        return m_pAdapterCommon; 
+        return (PADAPTERCOMMON)m_pAdapterCommon; 
     };
 #pragma code_seg()
 

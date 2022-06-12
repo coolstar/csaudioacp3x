@@ -51,5 +51,11 @@
     <ClInclude Include="ToneGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="acp_chip_offset_byte.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="acp3x.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
