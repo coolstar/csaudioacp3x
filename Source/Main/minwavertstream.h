@@ -90,10 +90,6 @@ protected:
     KSSTATE                     m_KsState;
     PKTIMER                     m_pTimer;
     PRKDPC                      m_pDpc;
-    ULONGLONG                   m_ullPlayPosition;
-    ULONGLONG                   m_ullWritePosition;
-    ULONGLONG                   m_ullLinearPosition;
-    ULONGLONG                   m_ullPresentationPosition;
     ULONG                       m_ulLastOsReadPacket;
     ULONG                       m_ulLastOsWritePacket;
     LONGLONG                    m_llPacketCounter;
@@ -111,6 +107,8 @@ protected:
     BOOLEAN                     m_bEoSReceived;
     BOOLEAN                     m_bLastBufferRendered;
     KSPIN_LOCK                  m_PositionSpinLock;
+    UINT32                      m_lastLinkPos;
+    UINT64                      m_lastLinearPos;
 
 public:
 

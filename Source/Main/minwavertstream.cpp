@@ -136,8 +136,6 @@ Return Value:
     m_pTimer = NULL;
     m_pDpc = NULL;
     m_llPacketCounter = 0;
-    m_ullPlayPosition = 0;
-    m_ullWritePosition = 0;
     m_ullDmaTimeStamp = 0;
     m_hnsElapsedTimeCarryForward = 0;
     m_ullLastDPCTimeStamp = 0;
@@ -146,8 +144,6 @@ Return Value:
     m_byteDisplacementCarryForward = 0;
     m_bLfxEnabled = FALSE;
     m_pWfExt = NULL;
-    m_ullLinearPosition = 0;
-    m_ullPresentationPosition = 0;
     m_ulContentId = 0;
     m_ulCurrentWritePosition = 0;
     m_ulLastOsReadPacket = ULONG_MAX;
@@ -639,8 +635,10 @@ NTSTATUS CMiniportWaveRTStream::GetPosition
         UpdatePosition(ilQPC);
     }
 
-    Position_->PlayOffset = m_ullPlayPosition;
-    Position_->WriteOffset = m_ullWritePosition;
+    UINT32 linkPos;
+    m_pMiniport->CurrentPosition(&linkPos, NULL);
+    Position_->PlayOffset = linkPos;
+    Position_->WriteOffset = linkPos;
 
     KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
 
@@ -695,7 +693,6 @@ NTSTATUS CMiniportWaveRTStream::GetReadPacket
     KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);
 
     LONGLONG packetCounter = m_llPacketCounter;
-    ULONGLONG ullLinearPosition = m_ullLinearPosition;
     ULONGLONG hnsElapsedTimeCarryForward = m_hnsElapsedTimeCarryForward;
     ULONGLONG ullDmaTimeStamp = m_ullDmaTimeStamp;
 
@@ -722,6 +719,9 @@ NTSTATUS CMiniportWaveRTStream::GetReadPacket
     // Return next packet number to be read
     *PacketNumber = availablePacketNumber;
 
+    UINT64 linearPos;
+    m_pMiniport->CurrentPosition(NULL, &linearPos);
+
     // Compute and return timestamp corresponding to the end of the available packet. In a real hardware
     // driver, the timestamp would be computed in a driver and hardware specific manner. In this sample
     // driver, it is extrapolated from the sample driver's internal simulated position correlation
@@ -730,7 +730,7 @@ NTSTATUS CMiniportWaveRTStream::GetReadPacket
     ULONGLONG linearPositionOfAvailablePacket = packetCounter * (m_ulDmaBufferSize / m_ulNotificationsPerBuffer);
     // Need to divide by (1000 * 10000 because m_ulDmaMovementRate is average bytes per sec
     ULONGLONG carryForwardBytes = (hnsElapsedTimeCarryForward * m_ulDmaMovementRate) / 10000000;
-    ULONGLONG deltaLinearPosition = ullLinearPosition + carryForwardBytes - linearPositionOfAvailablePacket;
+    ULONGLONG deltaLinearPosition = linearPos + carryForwardBytes - linearPositionOfAvailablePacket;
     ULONGLONG deltaTimeInHns = deltaLinearPosition * 10000000 / m_ulDmaMovementRate;
     ULONGLONG timeOfAvailablePacketInHns = ullDmaTimeStamp - deltaTimeInHns;
     ULONGLONG timeOfAvailablePacketInQpc = timeOfAvailablePacketInHns * m_ullPerformanceCounterFrequency.QuadPart / 10000000;
@@ -911,14 +911,18 @@ NTSTATUS CMiniportWaveRTStream::GetPositions(
     {
         UpdatePosition(ilQPC);
     }
+    UINT64 linearPos;
+    m_pMiniport->CurrentPosition(NULL, &linearPos);
+
     if (_pullLinearBufferPosition)
     {
-        *_pullLinearBufferPosition = m_ullLinearPosition;
+        *_pullLinearBufferPosition = linearPos;
     }
     if (_pullPresentationPosition)
     {
-        *_pullPresentationPosition = m_ullPresentationPosition;
+        *_pullPresentationPosition = linearPos;
     }
+
     KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
     if (_pliQPCTime)
     {
@@ -970,6 +974,9 @@ NTSTATUS CMiniportWaveRTStream::SetCurrentWritePositionInternal(_In_  ULONG _ulC
         return STATUS_INVALID_DEVICE_REQUEST;
     }
 
+    UINT64 linearPos;
+    m_pMiniport->CurrentPosition(NULL, &linearPos);
+
     PADAPTERCOMMON pAdapterComm = m_pMiniport->GetAdapterCommObj();
 
     //Event type: eMINIPORT_SET_WAVERT_BUFFER_WRITE_POSITION
@@ -978,7 +985,7 @@ NTSTATUS CMiniportWaveRTStream::SetCurrentWritePositionInternal(_In_  ULONG _ulC
     //Parameter 3: Target WaveRtBufferWritePosition received from portcls
     //Parameter 4: 0
     pAdapterComm->WriteEtwEvent(eMINIPORT_SET_WAVERT_BUFFER_WRITE_POSITION,
-        m_ullLinearPosition, // replace with the correct "Current linear buffer position"    
+        linearPos, // replace with the correct "Current linear buffer position"    
         m_ulCurrentWritePosition,
         _ulCurrentWritePosition, // this is new write position
         0); // always zero
@@ -996,7 +1003,7 @@ NTSTATUS CMiniportWaveRTStream::SetCurrentWritePositionInternal(_In_  ULONG _ulC
             //Parameter 3: Major glitch code: 3: Received same WaveRT buffer twice in a row during event driven mode
             //Parameter 4: Minor code for the glitch cause
             pAdapterComm->WriteEtwEvent(eMINIPORT_GLITCH_REPORT,
-                m_ullLinearPosition, // replace with the correct "Current linear buffer position"
+                linearPos, // replace with the correct "Current linear buffer position"
                 m_ulCurrentWritePosition,
                 3, // received same WaveRT buffer twice in a row during event driven mode
                 _ulCurrentWritePosition);
@@ -1028,14 +1035,7 @@ NTSTATUS CMiniportWaveRTStream::SetState
             {
                 // Acquire stream resources
             }
-            KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);
-            // Reset DMA
-            m_llPacketCounter = 0;
-            m_ullPlayPosition = 0;
-            m_ullWritePosition = 0;
-            m_ullLinearPosition = 0;
-            m_ullPresentationPosition = 0;
-            
+            KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);            
             // Reset OS read/write positions
             m_ulLastOsReadPacket = ULONG_MAX;
             m_ulCurrentWritePosition = 0;
@@ -1101,6 +1101,9 @@ NTSTATUS CMiniportWaveRTStream::SetState
             }
             // This call updates the linear buffer and presentation positions.
             GetPositions(NULL, NULL, NULL);
+
+            m_pMiniport->CurrentPosition(&m_lastLinkPos, &m_lastLinearPos);
+            m_pMiniport->StopDMA();
             break;
 
         case KSSTATE_RUN:
@@ -1130,6 +1133,11 @@ NTSTATUS CMiniportWaveRTStream::SetState
             m_pMiniport->StartDMA(m_ulDmaBufferSize);
             if (!NT_SUCCESS(ntStatus)) {
                 return ntStatus;
+            }
+
+            if (m_KsState == KSSTATE_PAUSE) {
+                DbgPrint("Restoring last position\n");
+                m_pMiniport->UpdatePosition(m_lastLinkPos, m_lastLinearPos);
             }
 
             break;
@@ -1191,8 +1199,9 @@ VOID CMiniportWaveRTStream::UpdatePosition
     ULONG ByteDisplacement = ((m_ulDmaMovementRate * TimeElapsedInMS) + m_byteDisplacementCarryForward) / 1000 ;
     m_byteDisplacementCarryForward = ((m_ulDmaMovementRate * TimeElapsedInMS) + m_byteDisplacementCarryForward) % 1000;
 
-    // Increment presentation position even after last buffer is rendered.
-    m_ullPresentationPosition += ByteDisplacement;
+    UINT32 linkPos;
+    UINT64 linearPos;
+    m_pMiniport->CurrentPosition(&linkPos, &linearPos);
 
     if (m_bCapture)
     {
@@ -1204,39 +1213,29 @@ VOID CMiniportWaveRTStream::UpdatePosition
         {
             // since EoS flag is set, we'll need to make sure not to read data beyond EOS position.
             // If driver's current position is less than EoS position, then make sure not to read data beyond EoS.
-            if (m_ullWritePosition <= m_ulCurrentWritePosition)
+            if (linkPos <= m_ulCurrentWritePosition)
             {
-                ByteDisplacement = min(ByteDisplacement, m_ulCurrentWritePosition - (ULONG)m_ullWritePosition);
+                ByteDisplacement = min(ByteDisplacement, m_ulCurrentWritePosition - (ULONG)linkPos);
             }
             // If our current position is ahead of EoS position and we'll wrap around after new position then adjust
             // new position if it crosses EoS.
-            else if ((m_ullWritePosition + ByteDisplacement) % m_ulDmaBufferSize < m_ullWritePosition)
+            else if ((linkPos + ByteDisplacement) % m_ulDmaBufferSize < linkPos)
             {
-                if ((m_ullWritePosition + ByteDisplacement) % m_ulDmaBufferSize > m_ulCurrentWritePosition)
+                if ((linkPos + ByteDisplacement) % m_ulDmaBufferSize > m_ulCurrentWritePosition)
                 {
-                    ByteDisplacement = ByteDisplacement - (((ULONG)m_ullWritePosition + ByteDisplacement) % m_ulDmaBufferSize - m_ulCurrentWritePosition);
+                    ByteDisplacement = ByteDisplacement - (((ULONG)linkPos + ByteDisplacement) % m_ulDmaBufferSize - m_ulCurrentWritePosition);
                 }
             }
         }
 
         // If the last packet was rendered(read in the sample driver's case), send out an etw event.
         if (m_bEoSReceived && !m_bLastBufferRendered
-            && (m_ullWritePosition + ByteDisplacement) % m_ulDmaBufferSize == m_ulCurrentWritePosition)
+            && (linkPos + ByteDisplacement) % m_ulDmaBufferSize == m_ulCurrentWritePosition)
         {
             m_bLastBufferRendered = TRUE;
         }
     }
-    
-    // Increment the DMA position by the number of bytes displaced since the last
-    // call to UpdatePosition() and ensure we properly wrap at buffer length.
-    //
-    m_ullPlayPosition = m_ullWritePosition =
-        (m_ullWritePosition + ByteDisplacement) % m_ulDmaBufferSize;
-    
-    // m_ullDmaTimeStamp is updated in both GetPostion and GetLinearPosition calls
-    // so m_ullLinearPosition needs to be updated accordingly here
-    //
-    m_ullLinearPosition += ByteDisplacement;
+ 
     
     // Update the DMA time stamp for the next call to GetPosition()
     //
@@ -1393,6 +1392,9 @@ TimerNotifyRT
     
     PADAPTERCOMMON  pAdapterComm = _this->m_pMiniport->GetAdapterCommObj();
 
+    UINT64 linearPos;
+    _this->m_pMiniport->CurrentPosition(NULL, &linearPos);
+
     // Simple buffer underrun detection.
     if (!_this->IsCurrentWaveRTWritePositionUpdated() && !_this->m_bEoSReceived)
     {
@@ -1402,7 +1404,7 @@ TimerNotifyRT
         //Parameter 3: Major glitch code: 1:WaveRT buffer is underrun
         //Parameter 4: Minor code for the glitch cause
         pAdapterComm->WriteEtwEvent(eMINIPORT_GLITCH_REPORT, 
-                                    _this->m_ullLinearPosition,
+                                    linearPos,
                                     _this->GetCurrentWaveRTWritePosition(),
                                     1,      // WaveRT buffer is underrun
                                     0); 

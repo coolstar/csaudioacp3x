@@ -1689,4 +1689,14 @@ CMiniportWaveRT::StopDMA() {
     return m_pAdapterCommon->m_pHW->acp3x_stop(m_DeviceType);
 }
 
+NTSTATUS
+CMiniportWaveRT::CurrentPosition(UINT32* linkPos, UINT64* linearPos) {
+    return m_pAdapterCommon->m_pHW->acp3x_current_position(m_DeviceType, linkPos, linearPos);
+}
+
+NTSTATUS
+CMiniportWaveRT::UpdatePosition(UINT32 linkPos, UINT64 linearPos) {
+    return m_pAdapterCommon->m_pHW->acp3x_set_position(m_DeviceType, linkPos, linearPos);
+}
+
 #pragma code_seg()
