@@ -60,6 +60,7 @@ class CAdapterCommon :
 
         STDMETHODIMP_(NTSTATUS) Init
         (   
+            _In_  PRESOURCELIST           ResourceList,
             _In_  PDEVICE_OBJECT  DeviceObject
         );
 
@@ -502,6 +503,7 @@ Return Value:
 NTSTATUS
 CAdapterCommon::Init
 ( 
+    _In_  PRESOURCELIST           ResourceList,
     _In_  PDEVICE_OBJECT          DeviceObject 
 )
 /*++
@@ -522,6 +524,7 @@ Return Value:
 {
     PAGED_CODE();
     DPF_ENTER(("[CAdapterCommon::Init]"));
+    UNREFERENCED_PARAMETER(ResourceList);
 
     ASSERT(DeviceObject);
 

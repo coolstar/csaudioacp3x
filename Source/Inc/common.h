@@ -252,6 +252,7 @@ DECLARE_INTERFACE_(IAdapterCommon, IUnknown)
     STDMETHOD_(NTSTATUS,        Init) 
     ( 
         THIS_
+        _In_  PRESOURCELIST           ResourceList,
         _In_  PDEVICE_OBJECT      DeviceObject 
     ) PURE;
 

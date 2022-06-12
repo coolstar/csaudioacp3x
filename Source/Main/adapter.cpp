@@ -555,7 +555,6 @@ Return Value:
 
     ASSERT(DeviceObject);
     ASSERT(Irp);
-    ASSERT(ResourceList);
 
     NTSTATUS                    ntStatus        = STATUS_SUCCESS;
 
@@ -579,7 +578,7 @@ Return Value:
     ntStatus = pUnknownCommon->QueryInterface( IID_IAdapterCommon,(PVOID *) &pAdapterCommon);
     IF_FAILED_JUMP(ntStatus, Exit);
 
-    ntStatus = pAdapterCommon->Init(DeviceObject);
+    ntStatus = pAdapterCommon->Init(ResourceList, DeviceObject);
     IF_FAILED_JUMP(ntStatus, Exit);
 
     //
