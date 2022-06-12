@@ -167,6 +167,9 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_reset() {
 #endif
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_init() {
+    bt_running_streams = 0;
+    sp_running_streams = 0;
+
 #if USEACPHW
     NTSTATUS status = acp3x_power_on();
     if (!NT_SUCCESS(status)) {
@@ -181,6 +184,9 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_init() {
 }
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_deinit() {
+    bt_running_streams = 0;
+    sp_running_streams = 0;
+
 #if USEACPHW
     NTSTATUS status = acp3x_reset();
     if (!NT_SUCCESS(status)) {
@@ -335,6 +341,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         reg_val = mmACP_BTTDM_ITER;
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_TX_RINGBUFSIZE;
+
+        bt_running_streams++;
         break;
     case eHeadphoneDevice:
         water_val =
@@ -342,6 +350,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         reg_val = mmACP_I2STDM_ITER;
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_TX_RINGBUFSIZE;
+
+        sp_running_streams++;
         break;
     case eMicArrayDevice1:
         water_val =
@@ -349,6 +359,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         reg_val = mmACP_BTTDM_IRER;
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_RX_RINGBUFSIZE;
+
+        bt_running_streams++;
         break;
     case eMicJackDevice:
         water_val =
@@ -356,6 +368,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         reg_val = mmACP_I2STDM_IRER;
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_RX_RINGBUFSIZE;
+
+        sp_running_streams++;
         break;
     default:
         DPF(D_ERROR, "Unknown device type");
@@ -382,22 +396,36 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     UINT32 reg_val;
     UINT32 ier_val;
 
+    INT running_streams = 0;
+
     switch (deviceType) {
     case eSpeakerDevice:
         reg_val = mmACP_BTTDM_ITER;
         ier_val = mmACP_BTTDM_IER;
+
+        bt_running_streams++;
+        running_streams = bt_running_streams;
         break;
     case eHeadphoneDevice:
         reg_val = mmACP_I2STDM_ITER;
         ier_val = mmACP_I2STDM_IER;
+
+        sp_running_streams++;
+        running_streams = sp_running_streams;
         break;
     case eMicArrayDevice1:
         reg_val = mmACP_BTTDM_IRER;
         ier_val = mmACP_BTTDM_IER;
+
+        bt_running_streams++;
+        running_streams = bt_running_streams;
         break;
     case eMicJackDevice:
         reg_val = mmACP_I2STDM_IRER;
         ier_val = mmACP_I2STDM_IER;
+
+        sp_running_streams++;
+        running_streams = sp_running_streams;
         break;
     default:
         DPF(D_ERROR, "Unknown device type");
@@ -407,7 +435,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     UINT32 val = rv_read32(reg_val);
     val = val & ~BIT(0);
     rv_write32(reg_val, val);
-    rv_write32(ier_val, 0);
+    if (running_streams < 1)
+        rv_write32(ier_val, 0);
 
     DbgPrint("Stopped DMA for device 0x%x\n", deviceType);
 #endif
