@@ -277,6 +277,40 @@ DECLARE_INTERFACE_(IAdapterCommon, IUnknown)
         _In_ PSERVICEGROUP        ServiceGroup 
     ) PURE;
 
+    STDMETHOD_(NTSTATUS,        PrepareDMA)
+        (
+            THIS_
+            _In_ eDeviceType deviceType,
+            _In_ PMDL mdl,
+            _In_ IPortWaveRTStream * stream
+        ) PURE;
+
+    STDMETHOD_(NTSTATUS, StartDMA)
+        (
+            THIS_
+            _In_ eDeviceType deviceType,
+            _In_ UINT32 byteCount
+        ) PURE;
+    STDMETHOD_(NTSTATUS, StopDMA)
+        (
+            THIS_
+            _In_ eDeviceType deviceType
+        ) PURE;
+    STDMETHOD_(NTSTATUS, CurrentPosition)
+        (
+            THIS_
+            _In_ eDeviceType deviceType,
+            _Out_ UINT32 * linkPos,
+            _Out_ UINT64 * linearPos
+        ) PURE;
+    STDMETHOD_(NTSTATUS, UpdatePosition)
+        (
+            THIS_
+            _In_ eDeviceType deviceType,
+            _In_ UINT32 linkPos,
+            _In_ UINT64 linearPos
+        ) PURE;
+
     STDMETHOD_(BOOL,            bDevSpecificRead)
     (
         THIS_

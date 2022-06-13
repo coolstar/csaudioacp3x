@@ -59,7 +59,7 @@ private:
     };
 
 protected:
-    CAdapterCommon                      *m_pAdapterCommon;
+    PADAPTERCOMMON                      m_pAdapterCommon;
     ULONG                               m_DeviceFlags;
     eDeviceType                         m_DeviceType;
     PPORTEVENTS                         m_pPortEvents;
@@ -143,7 +143,7 @@ public:
     {
         PAGED_CODE();
 
-        m_pAdapterCommon = (CAdapterCommon *)UnknownAdapter; // weak ref.
+        m_pAdapterCommon = (PADAPTERCOMMON)UnknownAdapter; // weak ref.
 
         if (MiniportPair->WaveDescriptor)
         {

@@ -19,7 +19,6 @@ Abstract:
 #include "minwavert.h"
 #include "minwavertstream.h"
 #include "micarraywavtable.h"
-#include "common_class.h"
 
 #define EFFECTS_LIST_COUNT 2
 
@@ -870,11 +869,6 @@ CMiniportWaveRT::StreamCreated
 
     DbgPrint("Stream created %d\n", m_DeviceType);
 
-    NTSTATUS status = m_pAdapterCommon->m_pHW->acp3x_hw_params(m_DeviceType);
-    if (!NT_SUCCESS(status)) {
-        return status;
-    }
-
     ALLOCATE_PIN_INSTANCE_RESOURCES(m_ulSystemAllocated);
 
     if (IsSystemCapturePin(_Pin))
@@ -1676,27 +1670,27 @@ exit:
 #pragma code_seg("PAGE")
 NTSTATUS
 CMiniportWaveRT::AcquireDMA(_In_ PCMiniportWaveRTStream _Stream) {
-    return m_pAdapterCommon->m_pHW->acp3x_program_dma(m_DeviceType, _Stream->m_pMDL, _Stream->m_pPortStream);
+    return m_pAdapterCommon->PrepareDMA(m_DeviceType, _Stream->m_pMDL, _Stream->m_pPortStream);
 }
 
 NTSTATUS
 CMiniportWaveRT::StartDMA(UINT32 byteCount) {
-    return m_pAdapterCommon->m_pHW->acp3x_play(m_DeviceType, byteCount);
+    return m_pAdapterCommon->StartDMA(m_DeviceType, byteCount);
 }
 
 NTSTATUS
 CMiniportWaveRT::StopDMA() {
-    return m_pAdapterCommon->m_pHW->acp3x_stop(m_DeviceType);
+    return m_pAdapterCommon->StopDMA(m_DeviceType);
 }
 
 NTSTATUS
 CMiniportWaveRT::CurrentPosition(UINT32* linkPos, UINT64* linearPos) {
-    return m_pAdapterCommon->m_pHW->acp3x_current_position(m_DeviceType, linkPos, linearPos);
+    return m_pAdapterCommon->CurrentPosition(m_DeviceType, linkPos, linearPos);
 }
 
 NTSTATUS
 CMiniportWaveRT::UpdatePosition(UINT32 linkPos, UINT64 linearPos) {
-    return m_pAdapterCommon->m_pHW->acp3x_set_position(m_DeviceType, linkPos, linearPos);
+    return m_pAdapterCommon->UpdatePosition(m_DeviceType, linkPos, linearPos);
 }
 
 #pragma code_seg()
