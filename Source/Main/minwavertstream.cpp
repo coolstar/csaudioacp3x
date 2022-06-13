@@ -375,10 +375,10 @@ NTSTATUS CMiniportWaveRTStream::GetPosition
     KIRQL oldIrql;
     KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);
 
-    UINT32 linkPos;
-    m_pMiniport->CurrentPosition(&linkPos, NULL);
-    Position_->PlayOffset = linkPos;
-    Position_->WriteOffset = linkPos - FIFO_SIZE;
+    UINT64 linearPos;
+    m_pMiniport->CurrentPosition(NULL, &linearPos);
+    Position_->PlayOffset = linearPos;
+    Position_->WriteOffset = linearPos + FIFO_SIZE;
 
     KeReleaseSpinLock(&m_PositionSpinLock, oldIrql);
 
