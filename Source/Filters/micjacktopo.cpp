@@ -66,17 +66,12 @@ Return Value:
             break;
 
         case KSPROPERTY_JACK_DESCRIPTION2:
-            ntStatus = pMiniport->PropertyHandlerJackDescription(
+            ntStatus = pMiniport->PropertyHandlerJackDescription2(
                 PropertyRequest,
                 ARRAYSIZE(MicJackDescriptions),
-                MicJackDescriptions);
-            break;
-
-        case KSPROPERTY_JACK_CONTAINERID:
-            ntStatus = pMiniport->PropertyHandlerJackDescription(
-                PropertyRequest,
-                ARRAYSIZE(MicJackDescriptions),
-                MicJackDescriptions);
+                MicJackDescriptions,
+                0 // jack capabilities
+            );
             break;
         }
     }

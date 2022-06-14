@@ -56,7 +56,7 @@ PCPIN_DESCRIPTOR MicJackTopoMiniportPins[] =
         MicJackTopoPinDataRangePointersBridge,              // DataRanges
         KSPIN_DATAFLOW_IN,                                // DataFlow
         KSPIN_COMMUNICATION_NONE,                         // Communication
-        &KSNODETYPE_HEADSET_MICROPHONE,                   // Category
+        &KSNODETYPE_MICROPHONE,                   // Category
         NULL,                                             // Name
         0                                                 // Reserved
       }
@@ -94,7 +94,7 @@ KSJACK_DESCRIPTION MicJackDesc =
     eGeoLocRight,
     eGenLocPrimaryBox,
     ePortConnJack,
-    FALSE               // NOTE: For convenience, wired headset jacks will be "unplugged" at boot.
+    TRUE               // NOTE: For convenience, wired headset jacks will be "unplugged" at boot.
 };
 
 //=============================================================================
@@ -130,14 +130,7 @@ PCPROPERTY_ITEM MicJackPropertiesTopoFilter[] =
         KSPROPERTY_JACK_DESCRIPTION2,
         KSPROPERTY_TYPE_GET | KSPROPERTY_TYPE_BASICSUPPORT,
         PropertyHandler_MicJackTopoFilter
-    },
-    {
-        &KSPROPSETID_Jack,
-        KSPROPERTY_JACK_CONTAINERID,
-        KSPROPERTY_TYPE_GET | KSPROPERTY_TYPE_BASICSUPPORT,
-        PropertyHandler_MicJackTopoFilter
     }
-
 };
 
 

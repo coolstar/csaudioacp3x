@@ -174,7 +174,7 @@ ENDPOINT_MINIPAIR MicJackMiniports =
     eMicJackDevice,
     L"TopologyMicJack",                   // make sure this or the template name matches with KSNAME_TopologyMicArray1 in the inf's [Strings] section 
     NULL,                                   // optional template name
-    CreateMicArrayMiniportTopology,
+    CreateMiniportTopologyCsAudioAcp3x,
     &MicJackTopoMiniportFilterDescriptor,
     0, NULL,                                // Interface properties
     L"WaveMicJack",                       // make sure this or the tempalte name matches with KSNAME_WaveMicArray1 in the inf's [Strings] section
@@ -215,7 +215,7 @@ static
 PENDPOINT_MINIPAIR  g_CaptureEndpoints[] =
 {
     &MicArray1Miniports,
-    //&MicJackMiniports
+    &MicJackMiniports
 };
 
 #define g_cCaptureEndpoints (SIZEOF_ARRAY(g_CaptureEndpoints))
