@@ -13,3 +13,5 @@ Not Yet Implemented:
 	* Notifications using IRQ with watermark register
 
 Tested on HP Chromebook 14b (Ryzen 3 3250C)
+
+Based off SimpleAudioSample and TabletAudioSample from Microsoft's WDK 10 samples
