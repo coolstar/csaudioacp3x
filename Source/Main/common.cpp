@@ -1242,7 +1242,6 @@ Note:
     //
     if (NewState.DeviceState != m_PowerState)
     {
-        DbgPrint("Entering power state %d\n", NewState.DeviceState);
         DPF
         (
             D_VERBOSE,

@@ -176,7 +176,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_init() {
         return status;
     }
     status = acp3x_reset();
-    DbgPrint("ACP Initialized with status %x\n", status);
     return status;
 #else
     return STATUS_SUCCESS;
@@ -193,7 +192,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_deinit() {
         return status;
     }
     status = acp3x_power_off();
-    DbgPrint("ACP Deinitialized with status %x\n", status);
     return status;
 #else
     return STATUS_SUCCESS;
@@ -227,8 +225,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_hw_params(eDeviceType deviceType) {
     val &= ACP3x_ITER_IRER_SAMP_LEN_MASK;
     val = val | (xfer_resolution << 3);
     rv_write32(reg_val, val);
-
-    DbgPrint("Configured DMA for device 0x%x\n", deviceType);
 #endif
     return STATUS_SUCCESS;
 }
@@ -321,8 +317,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_program_dma(eDeviceType deviceType, PMDL mdl, IP
     rv_write32(reg_fifo_size, FIFO_SIZE);
     rv_write32(mmACP_EXTERNAL_INTR_CNTL, BIT(I2S_RX_THRESHOLD) | BIT(BT_RX_THRESHOLD)
         | BIT(I2S_TX_THRESHOLD) | BIT(BT_TX_THRESHOLD));
-
-    DbgPrint("Programmed DMA for device 0x%x (%d pages)\n", deviceType, pageCount);
 #endif
     return STATUS_SUCCESS;
 }
@@ -385,8 +379,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
     rv_write32(ier_val, 1);
 
     rv_write32(mmACP_EXTERNAL_INTR_ENB, 1); //Enable interrupts
-
-    DbgPrint("Playing DMA for device 0x%x (size %d)\n", deviceType, byteCount);
 #endif
 return STATUS_SUCCESS;
 }
@@ -437,8 +429,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     rv_write32(reg_val, val);
     if (running_streams < 1)
         rv_write32(ier_val, 0);
-
-    DbgPrint("Stopped DMA for device 0x%x\n", deviceType);
 #endif
     return STATUS_SUCCESS;
 }

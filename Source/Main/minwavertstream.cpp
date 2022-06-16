@@ -282,8 +282,6 @@ _In_        ULONG       Size_
 
     PAGED_CODE();
 
-    DbgPrint("FreeAudioBuffer\n");
-
     if (Mdl_ != NULL)
     {
         if (m_pDmaBuffer != NULL)
@@ -315,8 +313,6 @@ _Out_   MEMORY_CACHING_TYPE    *CacheType_
     {
         return STATUS_UNSUCCESSFUL;
     }
-
-    DbgPrint("AllocateAudioBuffer; Requested Size: %lx. Block Align: %lx\n", RequestedSize_, m_pWfExt->Format.nBlockAlign);
 
     if (RequestedSize_ > MAX_BUFFER) {
         RequestedSize_ = MAX_BUFFER;
@@ -406,9 +402,7 @@ NTSTATUS CMiniportWaveRTStream::SetState
             {
                 // Acquire stream resources
             }
-            KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);            
-
-            DbgPrint("Stop DMA (device %d)\n", m_pMiniport->m_DeviceType);
+            KeAcquireSpinLock(&m_PositionSpinLock, &oldIrql);
 
             m_pMiniport->StopDMA();
             if (!NT_SUCCESS(ntStatus)) {
@@ -419,26 +413,19 @@ NTSTATUS CMiniportWaveRTStream::SetState
             break;
 
         case KSSTATE_ACQUIRE:
-            DbgPrint("Acquire DMA (device %d)\n", m_pMiniport->m_DeviceType);
-
             if (m_KsState == KSSTATE_STOP)
             {
-                DbgPrint("Acquire DMA [stopped (device %d)\n", m_pMiniport->m_DeviceType);
                 // Acquire stream resources
             }
             break;
             
         case KSSTATE_PAUSE:
-            DbgPrint("Pause DMA (device %d)\n", m_pMiniport->m_DeviceType);
-
             m_pMiniport->CurrentPosition(&m_lastLinkPos, &m_lastLinearPos);
             m_pMiniport->StopDMA();
             break;
 
         case KSSTATE_RUN:
             // Start DMA
-            DbgPrint("Start DMA (device %d)\n", m_pMiniport->m_DeviceType);
-
             ntStatus = m_pMiniport->AcquireDMA(this);
             if (!NT_SUCCESS(ntStatus)) {
                 return ntStatus;

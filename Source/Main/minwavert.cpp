@@ -867,8 +867,6 @@ CMiniportWaveRT::StreamCreated
     
     DPF_ENTER(("[CMiniportWaveRT::StreamCreated]"));
 
-    DbgPrint("Stream created %d\n", m_DeviceType);
-
     ALLOCATE_PIN_INSTANCE_RESOURCES(m_ulSystemAllocated);
 
     if (IsSystemCapturePin(_Pin))
@@ -918,8 +916,6 @@ CMiniportWaveRT::StreamClosed
     ULONG                     count           = 0;
 
     DPF_ENTER(("[CMiniportWaveRT::StreamClosed]"));
-
-    DbgPrint("Stream closed %d\n", m_DeviceType);
 
     if (IsSystemCapturePin(_Pin))
     {
