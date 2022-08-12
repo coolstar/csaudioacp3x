@@ -15,6 +15,6 @@ Not Yet Implemented:
 
 Tested on HP Chromebook 14b (Ryzen 3 3250C)
 
-Based off SimpleAudioSample and TabletAudioSample from Microsoft's WDK 10 samples
+Based off SimpleAudioSample (commit 9e1a643093cac60cd333b6d69abc1e4118a12d63) and TabletAudioSample from Microsoft's WDK 10 samples
 
 Based off Linux commit 6f6f28bf5d8e070c1e4a10d62d2a1af264683042 (relevant to sound/soc/amd/raven folder)
