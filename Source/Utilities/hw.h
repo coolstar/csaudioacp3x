@@ -16,6 +16,38 @@ Abstract:
 #ifndef _CSAUDIOACP3X_HW_H_
 #define _CSAUDIOACP3X_HW_H_
 
+typedef enum {
+    CSAudioEndpointTypeDSP,
+    CSAudioEndpointTypeSpeaker,
+    CSAudioEndpointTypeHeadphone,
+    CSAudioEndpointTypeMicArray,
+    CSAudioEndpointTypeMicJack
+} CSAudioEndpointType;
+
+typedef enum {
+    CSAudioEndpointRegister,
+    CSAudioEndpointStart,
+    CSAudioEndpointStop,
+    CSAudioEndpointOverrideFormat
+} CSAudioEndpointRequest;
+
+typedef struct CSAUDIOFORMATOVERRIDE {
+    UINT16 channels;
+    UINT16 frequency;
+    UINT16 bitsPerSample;
+    UINT16 validBitsPerSample;
+    BOOL force32BitOutputContainer;
+} CsAudioFormatOverride;
+
+typedef struct CSAUDIOARG {
+    UINT32 argSz;
+    CSAudioEndpointType endpointType;
+    CSAudioEndpointRequest endpointRequest;
+    union {
+        CsAudioFormatOverride formatOverride;
+    };
+} CsAudioArg, * PCsAudioArg;
+
 #define USEACPHW 1
 
 #if USEACPHW
@@ -51,6 +83,18 @@ typedef struct _PCI_BAR {
 class CCsAudioAcp3xHW
 {
 public:
+    int CsAudioArg2;
+    void CSAudioAPICalled(CsAudioArg arg);
+
+private:
+    PCALLBACK_OBJECT CSAudioAPICallback;
+    PVOID CSAudioAPICallbackObj;
+
+    NTSTATUS CSAudioAPIInit();
+    NTSTATUS CSAudioAPIDeinit();
+    CSAudioEndpointType GetCSAudioEndpoint(eDeviceType deviceType);
+    eDeviceType GetDeviceType(CSAudioEndpointType endpointType);
+
 protected:
     LONG                        m_PeakMeterControls[MAX_TOPOLOGY_NODES];
     ULONG                       m_ulMux;            // Mux selection

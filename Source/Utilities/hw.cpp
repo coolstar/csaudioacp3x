@@ -64,7 +64,7 @@ Return Value:
 bool CCsAudioAcp3xHW::ResourcesValidated() {
     if (!m_BAR0.Base.Base)
         return false;
-    return true;
+    return true && NT_SUCCESS(this->CSAudioAPIInit());
 }
 
 CCsAudioAcp3xHW::~CCsAudioAcp3xHW() {
@@ -72,6 +72,7 @@ CCsAudioAcp3xHW::~CCsAudioAcp3xHW() {
     if (m_BAR0.Base.Base)
         MmUnmapIoSpace(m_BAR0.Base.Base, m_BAR0.Len);
 #endif
+    this->CSAudioAPIDeinit();
 }
 
 #if USEACPHW
@@ -380,6 +381,13 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
 
     rv_write32(mmACP_EXTERNAL_INTR_ENB, 1); //Enable interrupts
 #endif
+
+    CsAudioArg arg;
+    RtlZeroMemory(&arg, sizeof(CsAudioArg));
+    arg.argSz = sizeof(CsAudioArg);
+    arg.endpointType = GetCSAudioEndpoint(deviceType);
+    arg.endpointRequest = CSAudioEndpointStart;
+    ExNotifyCallback(this->CSAudioAPICallback, &arg, &CsAudioArg2);
 return STATUS_SUCCESS;
 }
 
@@ -389,6 +397,13 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     UINT32 ier_val;
 
     INT running_streams = 0;
+
+    CsAudioArg arg;
+    RtlZeroMemory(&arg, sizeof(CsAudioArg));
+    arg.argSz = sizeof(CsAudioArg);
+    arg.endpointType = GetCSAudioEndpoint(deviceType);
+    arg.endpointRequest = CSAudioEndpointStop;
+    ExNotifyCallback(this->CSAudioAPICallback, &arg, &CsAudioArg2);
 
     switch (deviceType) {
     case eSpeakerDevice:
