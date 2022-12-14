@@ -39,7 +39,7 @@ CreateMicArrayMiniportTopology
     _Out_           PUNKNOWN* Unknown,
     _In_            REFCLSID,
     _In_opt_        PUNKNOWN                                UnknownOuter,
-    _In_            POOL_FLAGS                              PoolFlags,
+    _In_            POOL_TYPE                               PoolType,
     _In_            PUNKNOWN                                UnknownAdapter,
     _In_opt_        PVOID                                   DeviceContext,
     _In_            PENDPOINT_MINIPAIR                      MiniportPair
@@ -81,7 +81,7 @@ Return Value:
     UNREFERENCED_PARAMETER(DeviceContext);
 
     CMicArrayMiniportTopology* obj =
-        new (PoolFlags, MINTOPORT_POOLTAG)
+        new (PoolType, MINTOPORT_POOLTAG)
         CMicArrayMiniportTopology(UnknownOuter,
             MiniportPair->TopoDescriptor,
             MiniportPair->DeviceMaxChannels,

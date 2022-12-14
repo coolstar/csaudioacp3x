@@ -149,6 +149,12 @@ Return Value:
     NTSTATUS                    ntStatus;
     WDF_DRIVER_CONFIG           config;
 
+    //
+    //  Default to NonPagedPoolNx for non paged pool allocations where supported.
+    //
+
+    ExInitializeDriverRuntime(DrvRtPoolNxOptIn);
+
     DPF(D_TERSE, ("[DriverEntry]"));
     
     WDF_DRIVER_CONFIG_INIT(&config, WDF_NO_EVENT_CALLBACK);
@@ -571,7 +577,7 @@ Return Value:
                                 &pUnknownCommon,
                                 IID_IAdapterCommon,
                                 NULL,
-                                POOL_FLAG_NON_PAGED 
+                                NonPagedPool 
                                 );
     IF_FAILED_JUMP(ntStatus, Exit);
 

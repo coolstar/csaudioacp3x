@@ -71,9 +71,6 @@
     <ClInclude Include="minwavertstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="*.h;*.hpp;*.hxx;*.hm;*.inl;*.xsd">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common.h">
       <Filter>Header Files</Filter>
     </ClInclude>

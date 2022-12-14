@@ -227,7 +227,7 @@ private:
         _Out_       PUNKNOWN* Unknown,
         _In_        REFCLSID,
         _In_opt_    PUNKNOWN                UnknownOuter,
-        _In_        POOL_FLAGS              PoolFlags
+        _In_        POOL_TYPE              PoolType
     );
 
 private:
@@ -337,7 +337,7 @@ NewAdapterCommon
     _Out_       PUNKNOWN *              Unknown,
     _In_        REFCLSID,
     _In_opt_    PUNKNOWN                UnknownOuter,
-    _In_        POOL_FLAGS               PoolFlags
+    _In_        POOL_TYPE               PoolType
 )
 /*++
 
@@ -379,7 +379,7 @@ Return Value:
     //
     // Allocate an adapter object.
     //
-    CAdapterCommon *p = new(PoolFlags, MINADAPTER_POOLTAG) CAdapterCommon(UnknownOuter);
+    CAdapterCommon *p = new(PoolType, MINADAPTER_POOLTAG) CAdapterCommon(UnknownOuter);
     if (p == NULL)
     {
         ntStatus = STATUS_INSUFFICIENT_RESOURCES;
@@ -590,7 +590,7 @@ Return Value:
 
     // Initialize HW.
     // 
-    m_pHW = new (POOL_FLAG_NON_PAGED, CSAUDIOACP3X_POOLTAG)  CCsAudioAcp3xHW(ResourceList);
+    m_pHW = new (NonPagedPool, CSAUDIOACP3X_POOLTAG)  CCsAudioAcp3xHW(ResourceList);
     if (!m_pHW)
     {
         DPF(D_TERSE, ("Insufficient memory for Audio CoProcessor HW"));
@@ -1530,7 +1530,7 @@ Return Value:
                     &miniport,
                     MiniportClassId,
                     NULL,
-                    POOL_FLAG_NON_PAGED,
+                    NonPagedPool,
                     adapterCommon,
                     DeviceContext,
                     MiniportPair
@@ -1933,7 +1933,7 @@ CAdapterCommon::CacheSubdevice
     NTSTATUS         ntStatus       = STATUS_SUCCESS;
     MINIPAIR_UNKNOWN *pNewSubdevice = NULL;
 
-    pNewSubdevice = new(POOL_FLAG_NON_PAGED, MINADAPTER_POOLTAG) MINIPAIR_UNKNOWN;
+    pNewSubdevice = new(NonPagedPool, MINADAPTER_POOLTAG) MINIPAIR_UNKNOWN;
 
     if (!pNewSubdevice)
     {
@@ -2410,7 +2410,7 @@ Return Value:
     PAGED_CODE();
     // Allocate the KEY_VALUE_FULL_INFORMATION structure
     ulFullInfoLength = sizeof(KEY_VALUE_FULL_INFORMATION) + MAX_DEVICE_REG_KEY_LENGTH;
-    kvFullInfo = (PKEY_VALUE_FULL_INFORMATION)ExAllocatePool2(POOL_FLAG_NON_PAGED, ulFullInfoLength, MINADAPTER_POOLTAG);
+    kvFullInfo = (PKEY_VALUE_FULL_INFORMATION)ExAllocatePoolZero(NonPagedPool, ulFullInfoLength, MINADAPTER_POOLTAG);
     IF_TRUE_ACTION_JUMP(kvFullInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, Exit);
 
     // Iterate over each value and copy it to the destination
@@ -2430,7 +2430,7 @@ Return Value:
 
             ulFullInfoLength = ulFullInfoResultLength;
 
-            kvFullInfo = (PKEY_VALUE_FULL_INFORMATION)ExAllocatePool2(POOL_FLAG_NON_PAGED, ulFullInfoLength, MINADAPTER_POOLTAG);
+            kvFullInfo = (PKEY_VALUE_FULL_INFORMATION)ExAllocatePoolZero(NonPagedPool, ulFullInfoLength, MINADAPTER_POOLTAG);
             IF_TRUE_ACTION_JUMP(kvFullInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, loop_exit);
 
             // Try to enumerate the current value again
@@ -2446,7 +2446,7 @@ Return Value:
         }
 
         // Allocate the key value name string
-        pwstrKeyValueName = (PWSTR)ExAllocatePool2(POOL_FLAG_NON_PAGED, kvFullInfo->NameLength + sizeof(WCHAR)*2, MINADAPTER_POOLTAG);
+        pwstrKeyValueName = (PWSTR)ExAllocatePoolZero(NonPagedPool, kvFullInfo->NameLength + sizeof(WCHAR)*2, MINADAPTER_POOLTAG);
         IF_TRUE_ACTION_JUMP(kvFullInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, loop_exit);
 
         // Copy the key value name from the full information struct
@@ -2517,7 +2517,7 @@ Return Value:
 
     // Allocate the KEY_BASIC_INFORMATION structure
     ulBasicInfoLength = sizeof(KEY_BASIC_INFORMATION) + MAX_DEVICE_REG_KEY_LENGTH;
-    kBasicInfo = (PKEY_BASIC_INFORMATION)ExAllocatePool2(POOL_FLAG_NON_PAGED, ulBasicInfoLength, MINADAPTER_POOLTAG);
+    kBasicInfo = (PKEY_BASIC_INFORMATION)ExAllocatePoolZero(NonPagedPool, ulBasicInfoLength, MINADAPTER_POOLTAG);
     IF_TRUE_ACTION_JUMP(kBasicInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, Exit);
 
     ntStatus = STATUS_SUCCESS;
@@ -2536,7 +2536,7 @@ Return Value:
             // Free and re-allocate the KEY_BASIC_INFORMATION structure with the correct size.
             ExFreePoolWithTag(kBasicInfo, MINADAPTER_POOLTAG);
             ulBasicInfoLength = ulBasicInfoResultLength;
-            kBasicInfo = (PKEY_BASIC_INFORMATION)ExAllocatePool2(POOL_FLAG_NON_PAGED, ulBasicInfoLength, MINADAPTER_POOLTAG);
+            kBasicInfo = (PKEY_BASIC_INFORMATION)ExAllocatePoolZero(NonPagedPool, ulBasicInfoLength, MINADAPTER_POOLTAG);
             IF_TRUE_ACTION_JUMP(kBasicInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, loop_exit);
 
             // Try to enumerate the current key again.
@@ -2552,7 +2552,7 @@ Return Value:
         }
 
         // Allocate the key name string 
-        pwstrKeyName = (PWSTR)ExAllocatePool2(POOL_FLAG_NON_PAGED, kBasicInfo->NameLength + sizeof(WCHAR), MINADAPTER_POOLTAG);
+        pwstrKeyName = (PWSTR)ExAllocatePoolZero(NonPagedPool, kBasicInfo->NameLength + sizeof(WCHAR), MINADAPTER_POOLTAG);
         IF_TRUE_ACTION_JUMP(kBasicInfo == NULL, ntStatus = STATUS_INSUFFICIENT_RESOURCES, loop_exit);
 
         // Copy the key name from the basic information struct

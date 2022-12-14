@@ -26,7 +26,7 @@ CreateMiniportTopologyCsAudioAcp3x
     _Out_           PUNKNOWN *                              Unknown,
     _In_            REFCLSID,
     _In_opt_        PUNKNOWN                                UnknownOuter,
-    _In_            POOL_FLAGS                              PoolFlags, 
+    _In_            POOL_TYPE                               PoolType, 
     _In_            PUNKNOWN                                UnknownAdapter,
     _In_opt_        PVOID                                   DeviceContext,
     _In_            PENDPOINT_MINIPAIR                      MiniportPair
@@ -65,7 +65,7 @@ Return Value:
     ASSERT(MiniportPair);
 
     CMiniportTopology *obj = 
-        new (PoolFlags, MINWAVERT_POOLTAG) 
+        new (PoolType, MINWAVERT_POOLTAG)
             CMiniportTopology( UnknownOuter,
                                MiniportPair->TopoDescriptor,
                                MiniportPair->DeviceMaxChannels,

@@ -34,7 +34,7 @@ CreateMiniportWaveRTCsAudioAcp3x
     _Out_           PUNKNOWN                              * Unknown,
     _In_            REFCLSID,
     _In_opt_        PUNKNOWN                                UnknownOuter,
-    _In_            POOL_FLAGS                              PoolFlags,
+    _In_            POOL_TYPE                               PoolType,
     _In_            PUNKNOWN                                UnknownAdapter,
     _In_opt_        PVOID                                   DeviceContext,
     _In_            PENDPOINT_MINIPAIR                      MiniportPair
@@ -74,7 +74,7 @@ Return Value:
     ASSERT(Unknown);
     ASSERT(MiniportPair);
 
-    CMiniportWaveRT *obj = new (PoolFlags, MINWAVERT_POOLTAG) CMiniportWaveRT
+    CMiniportWaveRT *obj = new (PoolType, MINWAVERT_POOLTAG) CMiniportWaveRT
                                                              (
                                                                 UnknownAdapter,
                                                                 MiniportPair,
@@ -378,7 +378,7 @@ Return Value:
             
         // System streams.
         size = sizeof(PCMiniportWaveRTStream) * m_ulMaxSystemStreams;
-        m_SystemStreams = (PCMiniportWaveRTStream *)ExAllocatePool2(POOL_FLAG_NON_PAGED, size, MINWAVERT_POOLTAG);
+        m_SystemStreams = (PCMiniportWaveRTStream *)ExAllocatePoolZero(NonPagedPool, size, MINWAVERT_POOLTAG);
         if (m_SystemStreams == NULL)
         {
             return STATUS_INSUFFICIENT_RESOURCES;
@@ -483,7 +483,7 @@ Return Value:
     //
     if (NT_SUCCESS(ntStatus))
     {
-        stream = new (POOL_FLAG_NON_PAGED, MINWAVERT_POOLTAG) 
+        stream = new (NonPagedPool, MINWAVERT_POOLTAG)
             CMiniportWaveRTStream(NULL);
 
         if (stream)
@@ -1492,7 +1492,7 @@ Return Value:
         return STATUS_UNSUCCESSFUL;
     }
 
-    ulContentIds = new (POOL_FLAG_NON_PAGED, MINWAVERT_POOLTAG) ULONG[m_ulMaxSystemStreams + m_ulMaxOffloadStreams];
+    ulContentIds = new (NonPagedPool, MINWAVERT_POOLTAG) ULONG[m_ulMaxSystemStreams + m_ulMaxOffloadStreams];
     if (!ulContentIds)
     {
         return STATUS_INSUFFICIENT_RESOURCES;

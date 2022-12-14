@@ -33,7 +33,7 @@ CreateMiniportWaveRTCsAudioAcp3x
     _Out_       PUNKNOWN *,
     _In_        REFCLSID,
     _In_opt_    PUNKNOWN,
-    _In_        POOL_FLAGS,
+    _In_        POOL_TYPE,
     _In_        PUNKNOWN,
     _In_opt_    PVOID,
     _In_        PENDPOINT_MINIPAIR
@@ -45,7 +45,7 @@ CreateMiniportTopologyCsAudioAcp3x
     _Out_       PUNKNOWN *,
     _In_        REFCLSID,
     _In_opt_    PUNKNOWN,
-    _In_        POOL_FLAGS,
+    _In_        POOL_TYPE,
     _In_        PUNKNOWN,
     _In_opt_    PVOID,
     _In_        PENDPOINT_MINIPAIR
