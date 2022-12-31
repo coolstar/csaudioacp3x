@@ -124,7 +124,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_power_on() {
         Interval.QuadPart = -10;
         KeDelayExecutionThread(KernelMode, false, &Interval); //udelay(1)
     }
-    return STATUS_TIMEOUT;
+    return STATUS_IO_TIMEOUT;
 }
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_power_off() {
@@ -142,7 +142,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_power_off() {
         Interval.QuadPart = -10;
         KeDelayExecutionThread(KernelMode, false, &Interval); //udelay(1)
     }
-    return STATUS_TIMEOUT;
+    return STATUS_IO_TIMEOUT;
 }
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_reset() {
@@ -163,7 +163,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_reset() {
         if (!val)
             return STATUS_SUCCESS;
     }
-    return STATUS_TIMEOUT;
+    return STATUS_IO_TIMEOUT;
 }
 #endif
 
