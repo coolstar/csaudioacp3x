@@ -105,8 +105,8 @@ protected:
     PCI_BAR m_BAR0;
     UINT32 m_pme_en;
 
-    INT bt_running_streams;
-    INT sp_running_streams;
+    SHORT bt_running_streams;
+    SHORT sp_running_streams;
 
     UINT32 rv_read32(UINT32 reg);
     void rv_write32(UINT32 reg, UINT32 val);

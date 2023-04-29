@@ -337,7 +337,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_TX_RINGBUFSIZE;
 
-        bt_running_streams++;
+        InterlockedIncrement16(&bt_running_streams);
         break;
     case eHeadphoneDevice:
         water_val =
@@ -346,7 +346,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_TX_RINGBUFSIZE;
 
-        sp_running_streams++;
+        InterlockedIncrement16(&sp_running_streams);
         break;
     case eMicArrayDevice1:
         water_val =
@@ -355,7 +355,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_RX_RINGBUFSIZE;
 
-        bt_running_streams++;
+        InterlockedIncrement16(&bt_running_streams);
         break;
     case eMicJackDevice:
         water_val =
@@ -364,7 +364,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_RX_RINGBUFSIZE;
 
-        sp_running_streams++;
+        InterlockedIncrement16(&sp_running_streams);
         break;
     default:
         DPF(D_ERROR, "Unknown device type");
@@ -396,7 +396,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     UINT32 reg_val;
     UINT32 ier_val;
 
-    INT running_streams = 0;
+    SHORT running_streams = 0;
 
     CsAudioArg arg;
     RtlZeroMemory(&arg, sizeof(CsAudioArg));
@@ -410,28 +410,28 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
         reg_val = mmACP_BTTDM_ITER;
         ier_val = mmACP_BTTDM_IER;
 
-        bt_running_streams++;
+        InterlockedDecrement16(&bt_running_streams);
         running_streams = bt_running_streams;
         break;
     case eHeadphoneDevice:
         reg_val = mmACP_I2STDM_ITER;
         ier_val = mmACP_I2STDM_IER;
 
-        sp_running_streams++;
+        InterlockedDecrement16(&sp_running_streams);
         running_streams = sp_running_streams;
         break;
     case eMicArrayDevice1:
         reg_val = mmACP_BTTDM_IRER;
         ier_val = mmACP_BTTDM_IER;
 
-        bt_running_streams++;
+        InterlockedDecrement16(&bt_running_streams);
         running_streams = bt_running_streams;
         break;
     case eMicJackDevice:
         reg_val = mmACP_I2STDM_IRER;
         ier_val = mmACP_I2STDM_IER;
 
-        sp_running_streams++;
+        InterlockedDecrement16(&sp_running_streams);
         running_streams = sp_running_streams;
         break;
     default:
