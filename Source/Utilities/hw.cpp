@@ -168,8 +168,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_reset() {
 #endif
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_init() {
-    bt_running_streams = 0;
-    sp_running_streams = 0;
+    InterlockedExchange16(&bt_running_streams, 0);
+    InterlockedExchange16(&sp_running_streams, 0);
 
 #if USEACPHW
     NTSTATUS status = acp3x_power_on();
