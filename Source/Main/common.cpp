@@ -91,11 +91,6 @@ private:
         _Out_ UINT32* linkPos,
         _Out_ UINT64* linearPos
     );
-    STDMETHODIMP_(NTSTATUS) UpdatePosition(
-        _In_ eDeviceType deviceType,
-        _In_ UINT32 linkPos,
-        _In_ UINT64 linearPos
-    );
 
     STDMETHODIMP_(BOOL)     bDevSpecificRead();
 
@@ -890,20 +885,6 @@ CAdapterCommon::CurrentPosition(
 ) {
     if (m_pHW) {
         return m_pHW->acp3x_current_position(deviceType, linkPos, linearPos);
-    }
-    return STATUS_NO_SUCH_DEVICE;
-}
-
-//=============================================================================
-#pragma code_seg()
-STDMETHODIMP_(NTSTATUS)
-CAdapterCommon::UpdatePosition(
-    _In_ eDeviceType deviceType,
-    _In_ UINT32 linkPos,
-    _In_ UINT64 linearPos
-) {
-    if (m_pHW) {
-        return m_pHW->acp3x_set_position(deviceType, linkPos, linearPos);
     }
     return STATUS_NO_SUCH_DEVICE;
 }

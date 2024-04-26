@@ -132,7 +132,6 @@ public:
     NTSTATUS acp3x_play(eDeviceType deviceType, UINT32 byteCount);
     NTSTATUS acp3x_stop(eDeviceType deviceType);
     NTSTATUS acp3x_current_position(eDeviceType deviceType, UINT32* linkPos, UINT64* linearPos);
-    NTSTATUS acp3x_set_position(eDeviceType deviceType, UINT32 linkPos, UINT64 linearPos);
     
     void                        MixerReset();
     BOOL                        bGetDevSpecific();

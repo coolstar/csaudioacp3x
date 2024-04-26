@@ -492,45 +492,6 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_current_position(eDeviceType deviceType, UINT32 
     return STATUS_SUCCESS;
 }
 
-NTSTATUS CCsAudioAcp3xHW::acp3x_set_position(eDeviceType deviceType, UINT32 linkPos, UINT64 linearPos) {
-#if USEACPHW
-    UINT32 link_reg;
-    UINT32 linearHigh_reg;
-    UINT32 linearLow_reg;
-
-    switch (deviceType) {
-    case eSpeakerDevice:
-        link_reg = mmACP_BT_TX_LINKPOSITIONCNTR;
-        linearHigh_reg = mmACP_BT_TX_LINEARPOSITIONCNTR_HIGH;
-        linearLow_reg = mmACP_BT_TX_LINEARPOSITIONCNTR_LOW;
-        break;
-    case eHeadphoneDevice:
-        link_reg = mmACP_I2S_TX_LINKPOSITIONCNTR;
-        linearHigh_reg = mmACP_I2S_TX_LINEARPOSITIONCNTR_HIGH;
-        linearLow_reg = mmACP_I2S_TX_LINEARPOSITIONCNTR_LOW;
-        break;
-    case eMicArrayDevice1:
-        link_reg = mmACP_BT_RX_LINKPOSITIONCNTR;
-        linearHigh_reg = mmACP_BT_RX_LINEARPOSITIONCNTR_HIGH;
-        linearLow_reg = mmACP_BT_RX_LINEARPOSITIONCNTR_LOW;
-        break;
-    case eMicJackDevice:
-        link_reg = mmACP_I2S_RX_LINKPOSITIONCNTR;
-        linearHigh_reg = mmACP_I2S_RX_LINEARPOSITIONCNTR_HIGH;
-        linearLow_reg = mmACP_I2S_RX_LINEARPOSITIONCNTR_LOW;
-        break;
-    default:
-        DPF(D_ERROR, "Unknown device type");
-        return STATUS_INVALID_PARAMETER;
-    }
-
-    rv_write32(link_reg, linkPos);
-    rv_write32(linearHigh_reg, linearPos >> 32);
-    rv_write32(linearLow_reg, linearPos & 0xffffffff);
-#endif
-    return STATUS_SUCCESS;
-}
-
 //=============================================================================
 BOOL
 CCsAudioAcp3xHW::bGetDevSpecific()
