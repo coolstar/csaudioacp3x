@@ -184,8 +184,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_init() {
 }
 
 NTSTATUS CCsAudioAcp3xHW::acp3x_deinit() {
-    bt_running_streams = 0;
-    sp_running_streams = 0;
+    InterlockedExchange16(&bt_running_streams, 0);
+    InterlockedExchange16(&sp_running_streams, 0);
 
 #if USEACPHW
     NTSTATUS status = acp3x_reset();
@@ -329,6 +329,8 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
     UINT32 ier_val;
     UINT32 buf_reg;
 
+    SHORT* running_streams = NULL;
+
     switch (deviceType) {
     case eSpeakerDevice:
         water_val =
@@ -337,7 +339,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_TX_RINGBUFSIZE;
 
-        InterlockedIncrement16(&bt_running_streams);
+        running_streams = &bt_running_streams;
         break;
     case eHeadphoneDevice:
         water_val =
@@ -346,7 +348,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_TX_RINGBUFSIZE;
 
-        InterlockedIncrement16(&sp_running_streams);
+        running_streams = &sp_running_streams;
         break;
     case eMicArrayDevice1:
         water_val =
@@ -355,7 +357,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_BTTDM_IER;
         buf_reg = mmACP_BT_RX_RINGBUFSIZE;
 
-        InterlockedIncrement16(&bt_running_streams);
+        running_streams = &bt_running_streams;
         break;
     case eMicJackDevice:
         water_val =
@@ -364,10 +366,14 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
         ier_val = mmACP_I2STDM_IER;
         buf_reg = mmACP_I2S_RX_RINGBUFSIZE;
 
-        InterlockedIncrement16(&sp_running_streams);
+        running_streams = &sp_running_streams;
         break;
     default:
         DPF(D_ERROR, "Unknown device type");
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    if (!running_streams) {
         return STATUS_INVALID_PARAMETER;
     }
 
@@ -375,6 +381,9 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_play(eDeviceType deviceType, UINT32 byteCount) {
     rv_write32(buf_reg, byteCount);
 
     UINT32 val = rv_read32(reg_val);
+    if ((val & BIT(0)) == 0) {
+        InterlockedIncrement16(running_streams);
+    }
     val = val | BIT(0);
     rv_write32(reg_val, val);
     rv_write32(ier_val, 1);
@@ -396,7 +405,7 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
     UINT32 reg_val;
     UINT32 ier_val;
 
-    SHORT running_streams = 0;
+    SHORT *running_streams = NULL;
 
     CsAudioArg arg;
     RtlZeroMemory(&arg, sizeof(CsAudioArg));
@@ -410,39 +419,44 @@ NTSTATUS CCsAudioAcp3xHW::acp3x_stop(eDeviceType deviceType) {
         reg_val = mmACP_BTTDM_ITER;
         ier_val = mmACP_BTTDM_IER;
 
-        InterlockedDecrement16(&bt_running_streams);
-        running_streams = bt_running_streams;
+        running_streams = &bt_running_streams;
         break;
     case eHeadphoneDevice:
         reg_val = mmACP_I2STDM_ITER;
         ier_val = mmACP_I2STDM_IER;
 
-        InterlockedDecrement16(&sp_running_streams);
-        running_streams = sp_running_streams;
+        running_streams = &sp_running_streams;
         break;
     case eMicArrayDevice1:
         reg_val = mmACP_BTTDM_IRER;
         ier_val = mmACP_BTTDM_IER;
 
-        InterlockedDecrement16(&bt_running_streams);
-        running_streams = bt_running_streams;
+        running_streams = &bt_running_streams;
         break;
     case eMicJackDevice:
         reg_val = mmACP_I2STDM_IRER;
         ier_val = mmACP_I2STDM_IER;
 
-        InterlockedDecrement16(&sp_running_streams);
-        running_streams = sp_running_streams;
+        running_streams = &sp_running_streams;
         break;
     default:
         DPF(D_ERROR, "Unknown device type");
         return STATUS_INVALID_PARAMETER;
     }
 
+    if (!running_streams) {
+        return STATUS_INVALID_PARAMETER;
+    }
+
     UINT32 val = rv_read32(reg_val);
+    if ((val & BIT(0)) != 0) {
+        InterlockedDecrement16(running_streams);
+    }
     val = val & ~BIT(0);
     rv_write32(reg_val, val);
-    if (running_streams < 1)
+
+    SHORT streamsActive = InterlockedCompareExchange16(running_streams, 0, 0);
+    if (streamsActive == 0)
         rv_write32(ier_val, 0);
 #endif
     return STATUS_SUCCESS;
